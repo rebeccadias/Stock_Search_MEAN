@@ -1,0 +1,22 @@
+/* You can add global styles to this file, and also import other style files */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@200;400;500;700&display=swap");
+
+.navbar {
+  background-color: #1c279d !important; /* Change navbar background to blue */
+}
+
+.navbar-light .navbar-brand,
+.navbar-light .navbar-nav .nav-link {
+  font-weight: 100;
+  color: white !important; /* Change text color to white */
+}
+.btn-outline-success {
+  background-color: transparent !important; /* Remove background color */
+  border: none !important; /* Remove border */
+  color: white !important; /* Ensure text color is white */
+}
+
+.btn-outline-success:focus {
+  outline: none !important; /* Remove the default focus outline */
+  box-shadow: 0 0 0 0.1rem white !important; /* Custom focus style */
+}
