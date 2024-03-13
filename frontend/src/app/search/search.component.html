@@ -1,1 +1,11 @@
 <p>search works!</p>
+<div *ngIf="stockProfile">
+    <h2>{{stockProfile.name}} ({{stockProfile.ticker}})</h2>
+    <p>Exchange: {{stockProfile.exchange}}</p>
+    <img [src]="stockProfile.logo" alt="Company Logo">
+  </div>
+  <div *ngIf="stockQuote">
+    <p>Last Price: {{stockQuote.c | number:'1.2-2'}}</p>
+    <p>Change: {{stockQuote.d | number:'1.2-2'}}</p>
+    <p>Percent Change: {{stockQuote.dp | number:'1.2-2'}}%</p>
+  </div>

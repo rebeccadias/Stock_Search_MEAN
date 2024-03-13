@@ -1,0 +1,17 @@
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+<div class="container text-center mt-5">
+  <h2 style="font-family: 'Roboto', sans-serif;">Stock Search</h2>
+  <div class="input-group mb-3 justify-content-center input-container">
+    <div class="position-relative" style="width: 100%;"> <!-- Container to hold the input and icons -->
+      <input type="text" aria-label="Stock Ticker" matInput [formControl]="myControl" [matAutocomplete]="auto" class="form-control rounded-pill" (keyup.enter)="performSearch()">
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+          {{ option.symbol }} | {{ option.description }}
+        </mat-option>
+      </mat-autocomplete>
+      <i class="fas fa-search search-icon grey-icon" (click)="performSearch()"></i>
+      <i class="fas fa-times clear-icon grey-icon" (click)="myControl.setValue('')"></i>
+    </div>
+  </div>
+</div>
+<router-outlet></router-outlet>
