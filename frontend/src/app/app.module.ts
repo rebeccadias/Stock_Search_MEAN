@@ -7,6 +7,16 @@ import { HomeComponent } from './home/home.component';
 import { SearchComponent } from './search/search.component';
 import { WatchlistComponent } from './watchlist/watchlist.component';
 import { PortfolioComponent } from './portfolio/portfolio.component';
+import { HttpClientModule } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+
+import { ReactiveFormsModule, FormsModule } from '@angular/forms'; // Import FormsModule and ReactiveFormsModule
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatAutocompleteModule } from '@angular/material/autocomplete'; // Import MatAutocompleteModule
+import { MatInputModule } from '@angular/material/input'; // Import MatInputModule
+import { AppService } from './app.services';
+import { SearchBarComponent } from './search-bar/search-bar.component';
+
 
 @NgModule({
   declarations: [
@@ -14,14 +24,23 @@ import { PortfolioComponent } from './portfolio/portfolio.component';
     HomeComponent,
     SearchComponent,
     WatchlistComponent,
-    PortfolioComponent
+    PortfolioComponent,
+    SearchBarComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule, 
+    MatInputModule, 
   ],
   providers: [
-    provideClientHydration()
+    provideClientHydration(),
+    provideAnimationsAsync(),
+    AppService,
   ],
   bootstrap: [AppComponent]
 })

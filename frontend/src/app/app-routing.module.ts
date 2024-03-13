@@ -8,6 +8,14 @@ import { WatchlistComponent } from './watchlist/watchlist.component';
 import { PortfolioComponent } from './portfolio/portfolio.component';
 
 
+// const routes: Routes = [
+//   { path: '', redirectTo: '/search/home', pathMatch: 'full' },
+//   { path: 'search/home', component: HomeComponent },
+//   { path: 'search/:ticker', component: SearchComponent },
+//   { path: 'watchlist', component: WatchlistComponent },
+//   { path: 'portfolio', component: PortfolioComponent },
+// ];
+// In app-routing.module.ts
 const routes: Routes = [
   { path: '', redirectTo: '/search/home', pathMatch: 'full' },
   { path: 'search/home', component: HomeComponent },

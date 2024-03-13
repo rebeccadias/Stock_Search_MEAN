@@ -1,0 +1,30 @@
+.input-container {
+    max-width: 50%;
+    margin: auto;
+    position: relative;
+  }
+  
+  .search-icon,
+  .clear-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+  
+  .search-icon {
+    right: 35px;
+  }
+  
+  .clear-icon {
+    right: 10px;
+  }
+  
+  .rounded-input {
+    padding-right: 50px; /* Adjust this based on the size of your icons */
+  }
+
+  .grey-icon {
+    color: #888888; /* Faded grey color */
+  }
+  
