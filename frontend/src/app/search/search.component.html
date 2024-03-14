@@ -1,11 +1,71 @@
-<p>search works!</p>
-<div *ngIf="stockProfile">
-    <h2>{{stockProfile.name}} ({{stockProfile.ticker}})</h2>
-    <p>Exchange: {{stockProfile.exchange}}</p>
-    <img [src]="stockProfile.logo" alt="Company Logo">
+<app-search-bar></app-search-bar>
+
+<div class="container">
+  <div class="row" *ngIf="stockProfile && stockQuote">
+    <div class="col-4 box1">
+      <div class="row row1">
+        <div class="col text-right">
+          {{ stockProfile.ticker }}
+        </div>
+        <div class="col text-start">
+          <i class="fas fa-star"></i>
+        </div>
+      </div>
+
+      <div class="row row2 justify-content-center">{{ stockProfile.name }}</div>
+      <div class="row row3 justify-content-center">
+        {{ stockProfile.exchange }}
+      </div>
+      <div class="row row4">
+        <!-- Buy Button -->
+        <button type="button" class="btn btn-success">Buy</button>
+        <!-- Sell Button, shown only if stockInPortfolio is true -->
+        <!-- *ngIf="stockInPortfolio" -->
+        <button type="button" class="btn btn-danger">Sell</button>
+      </div>
+    </div>
+    <div
+      class="col-4 box2 d-flex justify-content-center align-items-center"
+      style="height: 100%"
+    >
+      <img
+        [src]="stockProfile.logo"
+        alt="Company Logo"
+        class="img-fluid my-auto"
+        style="max-height: 100%"
+      />
+    </div>
+
+    <!-- Last price, change, percent change, and date/time, on top right. The change items should
+    be preceded by appropriately colored arrows; -->
+
+    <div class="col-4 box3">
+      <div class="row">{{ stockQuote.c | number : "1.2-2" }}</div>
+      <div class="row">
+        <div class="col">
+          {{ stockQuote.d | number : "1.2-2" }}
+        </div>
+        <div class="col">
+          {{ stockQuote.dp | number : "1.2-2" }}
+        </div>
+      </div>
+      <div class="row">{{ stockQuote.t }}</div>
+    </div>
   </div>
-  <div *ngIf="stockQuote">
-    <p>Last Price: {{stockQuote.c | number:'1.2-2'}}</p>
-    <p>Change: {{stockQuote.d | number:'1.2-2'}}</p>
-    <p>Percent Change: {{stockQuote.dp | number:'1.2-2'}}%</p>
+  <div
+    class="row row2 justify-content-center align-items-center"
+    [ngStyle]="{ color: isOpen ? 'green' : 'red' }"
+  >
+    <span *ngIf="isOpen; else marketClosed"> Market is Open </span>
+    <ng-template #marketClosed>
+      Market Closed on {{ currentDate }}
+    </ng-template>
   </div>
+
+  <mat-tab-group>
+    <mat-tab label="First"> Content 1 </mat-tab>
+    <mat-tab label="Second"> Content 2 </mat-tab>
+    <mat-tab label="Third"> Content 3 </mat-tab>
+    <mat-tab label="Fourth"> Content 4 </mat-tab>
+  </mat-tab-group>
+</div>

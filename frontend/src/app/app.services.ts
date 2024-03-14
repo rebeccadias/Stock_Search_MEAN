@@ -11,14 +11,12 @@ export class AppService {
 
   constructor(private http: HttpClient) {}
 
-  // In AppService
   searchStocks(query: string): Observable<any[]> {
-    // Example URL, replace with your actual backend endpoint that returns the search results
     return this.http.get<any[]>(`${this.backendUrl}/search?q=${query}`).pipe(
       map((results) =>
         results.map((item) => ({
-          symbol: item.symbol, // Adjust based on the actual response structure
-          description: item.description, // Adjust based on the actual response structure
+          symbol: item.symbol,
+          description: item.description,
         }))
       )
     );

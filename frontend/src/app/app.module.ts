@@ -16,6 +16,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete'; // Impor
 import { MatInputModule } from '@angular/material/input'; // Import MatInputModule
 import { AppService } from './app.services';
 import { SearchBarComponent } from './search-bar/search-bar.component';
+import { MatTabsModule } from '@angular/material/tabs';
+
 
 
 @NgModule({
@@ -35,7 +37,8 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
     FormsModule,
     ReactiveFormsModule,
     MatAutocompleteModule, 
-    MatInputModule, 
+    MatInputModule,  
+    MatTabsModule,
   ],
   providers: [
     provideClientHydration(),
