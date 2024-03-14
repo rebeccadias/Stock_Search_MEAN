@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AppService } from '../app.services';
-import { MatTabsModule } from '@angular/material/tabs';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-search',
@@ -12,6 +12,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 export class SearchComponent implements OnInit {
   stockProfile: any;
   stockQuote: any;
+  companyPeers: any;
+  companyNews: any;
   isOpen: boolean = false;
   currentDate: string = '';
 
@@ -25,7 +27,6 @@ export class SearchComponent implements OnInit {
       const ticker = params['ticker'];
       this.loadStockDetails(ticker);
     });
-    this.checkMarketStatus();
   }
 
   loadStockDetails(ticker: string) {
@@ -35,26 +36,64 @@ export class SearchComponent implements OnInit {
 
     this.appService.fetchStockQuote(ticker).subscribe((quote) => {
       this.stockQuote = quote;
+      this.checkMarketStatus();
+    });
+    this.appService.fetchCompanyPeers(ticker).subscribe((companypeers) => {
+      this.companyPeers = companypeers;
+    });
+    this.appService.fetchCompanyNews(ticker).subscribe((companynews) => {
+      this.companyNews = companynews;
     });
   }
+
   checkMarketStatus() {
-    const currentDateTimeUTC = new Date(); // This is actually in UTC
-    const edtOffset = 4 * 60; // EDT is UTC-4 hours, but JavaScript offset is positive for behind UTC
+    // Safety check to ensure stockQuote is defined
+    if (!this.stockQuote || !this.stockQuote.t) {
+      // Handle scenario where stockQuote or stockQuote.t is not yet available
+      console.log('stockQuote or stockQuote.t is undefined');
+      return;
+    }
+    console.log('stockQuote.t', this.stockQuote.t);
 
-    // Assuming you're adjusting for EDT (Eastern Daylight Time, UTC-4)
-    // Note: This simplistic approach doesn't handle daylight saving time changes.
-    const edtTime = new Date(currentDateTimeUTC.getTime() - edtOffset * 60000);
+    // Convert stockQuote.t to milliseconds to create a Date object
+    const lastUpdateTimestamp = this.stockQuote.t * 1000;
 
-    // Set market hours in EDT
-    const marketOpen = new Date(edtTime);
-    marketOpen.setHours(9, 30, 0); // Market opens at 9:30 AM EDT
-    const marketClose = new Date(edtTime);
-    marketClose.setHours(16, 0, 0); // Market closes at 4:00 PM EDT
+    const lastUpdateDate = new Date(lastUpdateTimestamp);
 
-    // Check if current EDT time is within market hours
-    this.isOpen = edtTime >= marketOpen && edtTime <= marketClose;
+    // Extract hours and minutes from the last update timestamp
+    const lastUpdateHours = lastUpdateDate.getUTCHours();
+    const lastUpdateMinutes = lastUpdateDate.getUTCMinutes();
 
-    // Format current date and time for display (consider timezone adjustments if needed)
-    this.currentDate = edtTime.toISOString().replace('T', ' ').slice(0, 19);
+    // Get current time in UTC
+    const currentDate = new Date();
+    console.log('currentDate', currentDate);
+    const currentHours = currentDate.getUTCHours();
+    const currentMinutes = currentDate.getUTCMinutes();
+
+    // Calculate the total minutes for easier comparison
+    const lastUpdateTotalMinutes = lastUpdateHours * 60 + lastUpdateMinutes;
+    const currentTotalMinutes = currentHours * 60 + currentMinutes;
+
+    // Calculate the absolute difference in minutes
+    const differenceInMinutes = Math.abs(
+      currentTotalMinutes - lastUpdateTotalMinutes
+    );
+
+    // Market is considered open if the difference is 5 minutes or less
+    this.isOpen = differenceInMinutes <= 5;
+
+    if (!this.isOpen) {
+      // Market is closed, format the last update timestamp for display
+      this.currentDate = lastUpdateDate
+        .toISOString()
+        .replace('T', ' ')
+        .slice(0, 19);
+      console.log(
+        `Market is closed as of ${this.currentDate}. Stock last updated at ${this.stockQuote.t}`
+      );
+    } else {
+      // Market is open, no need to display the date/time
+      console.log('Market is open.');
+    }
   }
 }

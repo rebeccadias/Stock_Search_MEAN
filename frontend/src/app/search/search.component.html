@@ -1,7 +1,7 @@
 <app-search-bar></app-search-bar>
 
 <div class="container">
-  <div class="row" *ngIf="stockProfile && stockQuote">
+  <div class="row" *ngIf="stockProfile && stockQuote && companyPeers">
     <div class="col-4 box1">
       <div class="row row1">
         <div class="col text-right">
@@ -63,9 +63,95 @@
   </div>
 
   <mat-tab-group>
-    <mat-tab label="First"> Content 1 </mat-tab>
-    <mat-tab label="Second"> Content 2 </mat-tab>
-    <mat-tab label="Third"> Content 3 </mat-tab>
-    <mat-tab label="Fourth"> Content 4 </mat-tab>
+    <mat-tab label="Summary">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 col-md-6">
+            <div class="row">
+              <!-- Add custom class for styling and use Bootstrap's utility classes for alignment -->
+              <div
+                class="col-12 d-flex flex-column justify-content-center justify-content-md-start high-price-row"
+              >
+                <div>High Price: {{ stockQuote?.h }}</div>
+                <div>Low Price: {{ stockQuote?.l }}</div>
+                <div>Open Price: {{ stockQuote?.o }}</div>
+                <div>Prev. Close: {{ stockQuote?.pc }}</div>
+              </div>
+
+              <div
+                class="col-12 d-flex justify-content-center flex-column text-center"
+                style="padding: 10px"
+              >
+                <div style="padding: 5px">About the Company</div>
+                <div style="padding: 5px">
+                  IPO Start Date: {{ stockProfile?.ipo }}
+                </div>
+                <div style="padding: 5px">
+                  Industry: {{ stockProfile?.finnhubIndustry }}
+                </div>
+                <div style="padding: 5px">
+                  WebPage:
+                  <a
+                    *ngIf="stockProfile"
+                    href="{{ stockProfile?.weburl }}"
+                    target="_blank"
+                    >{{ stockProfile.weburl }}</a
+                  >
+                </div>
+                <div style="padding: 5px">
+                  Company Peers: {{ companyPeers }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="col-12 col-md-6 d-flex align-items-center justify-content-center"
+            style="height: 100%"
+          >
+            col2 chart
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Top News">
+      <!-- News Item Card -->
+      <div class="container">
+        <div class="row">
+          <!-- Iterate over your news items here -->
+          <div class="container">
+            <div class="row">
+              <div
+                class="col-sm-12 col-md-6"
+                *ngFor="let newsItem of companyNews"
+              >
+                <div
+                  class="card mb-3"
+                  style="max-width: 540px"
+                  data-toggle="modal"
+                >
+                  <div class="row no-gutters">
+                    <div class="col-md-4">
+                      <img
+                        src="{{ newsItem.image }}"
+                        class="card-img"
+                        alt="{{ newsItem.title }}"
+                      />
+                    </div>
+                    <div class="col-md-8">
+                      <div class="card-body">
+                        <h5 class="card-title">{{ newsItem.title }}</h5>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Charts"> Content 3 </mat-tab>
+    <mat-tab label="Insights"> Content 4 </mat-tab>
   </mat-tab-group>
 </div>
