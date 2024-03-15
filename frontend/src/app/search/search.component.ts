@@ -103,4 +103,11 @@ export class SearchComponent implements OnInit {
       console.log('Market is open.');
     }
   }
+
+  convertTimestamp(timestamp: number): string {
+    if (!timestamp) return '';
+    const date = new Date(timestamp * 1000); // Assuming timestamp is in seconds
+    return date.toISOString().replace('T', ' ').slice(0, 19);
+  }
+  
 }

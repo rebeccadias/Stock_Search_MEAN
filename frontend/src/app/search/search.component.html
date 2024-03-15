@@ -1,55 +1,33 @@
 <app-search-bar></app-search-bar>
 
-<div class="container">
-  <div class="row" *ngIf="stockProfile && stockQuote && companyPeers">
-    <div class="col-4 box1">
-      <div class="row row1">
-        <div class="col text-right">
-          {{ stockProfile.ticker }}
-        </div>
-        <div class="col text-start">
-          <i class="fas fa-star"></i>
-        </div>
-      </div>
+<!-- <app-search-bar></app-search-bar> -->
 
-      <div class="row row2 justify-content-center">{{ stockProfile.name }}</div>
-      <div class="row row3 justify-content-center">
-        {{ stockProfile.exchange }}
+<div class="container">
+  <div class="row justify-content-center" *ngIf="stockProfile && stockQuote && companyPeers">
+    <!-- First Column: Ticker, Name, Buy/Sell -->
+    <div class="col-3 box1 d-flex flex-column justify-content-center">
+      <div class="row mb-2 justify-content-center big-font">
+        <span>{{ stockProfile.ticker }}</span>
+        <i class="far fa-star small-icon"></i> <!-- This is the empty star icon -->
       </div>
-      <div class="row row4">
-        <!-- Buy Button -->
-        <button type="button" class="btn btn-success">Buy</button>
-        <!-- Sell Button, shown only if stockInPortfolio is true -->
-        <!-- *ngIf="stockInPortfolio" -->
+      <div class="row mb-2 justify-content-center">{{ stockProfile.name }}</div>
+      <div class="row mb-2 justify-content-center">{{ stockProfile.exchange }}</div>
+      <div class="row justify-content-center">
+        <button type="button" class="btn btn-success mr-1">Buy</button>
         <button type="button" class="btn btn-danger">Sell</button>
       </div>
     </div>
-    <div
-      class="col-4 box2 d-flex justify-content-center align-items-center"
-      style="height: 100%"
-    >
-      <img
-        [src]="stockProfile.logo"
-        alt="Company Logo"
-        class="img-fluid my-auto"
-        style="max-height: 100%"
-      />
+
+    <!-- Second Column: Logo -->
+    <div class="col-3 box2 d-flex justify-content-center align-items-center" style="height: 100%">
+      <img [src]="stockProfile.logo" alt="Company Logo" class="img-fluid my-auto" style="max-height: 100%"/>
     </div>
 
-    <!-- Last price, change, percent change, and date/time, on top right. The change items should
-    be preceded by appropriately colored arrows; -->
-
-    <div class="col-4 box3">
-      <div class="row">{{ stockQuote.c | number : "1.2-2" }}</div>
-      <div class="row">
-        <div class="col">
-          {{ stockQuote.d | number : "1.2-2" }}
-        </div>
-        <div class="col">
-          {{ stockQuote.dp | number : "1.2-2" }}
-        </div>
-      </div>
-      <div class="row">{{ stockQuote.t }}</div>
+    <!-- Third Column: Stock Details -->
+    <div class="col-3 box3">
+      <div class="row mb-2 justify-content-center stock-details" [ngClass]="{'red-text': stockQuote.d < 0, 'green-text': stockQuote.d >= 0}">{{ stockQuote.c | number : "1.2-2" }}</div>
+      <div class="row mb-2 justify-content-center stock-details" [ngClass]="{'red-text': stockQuote.d < 0, 'green-text': stockQuote.d >= 0}">{{ stockQuote.d | number : "1.2-2" }} ({{ stockQuote.dp | number : "1.2-2" }}%)</div>
+      <div class="row justify-content-center">{{ convertTimestamp(stockQuote.t) }}</div>
     </div>
   </div>
   <div
