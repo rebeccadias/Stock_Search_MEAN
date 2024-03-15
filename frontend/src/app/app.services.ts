@@ -42,4 +42,10 @@ export class AppService {
       `${this.backendUrl}/api/stock/companynews?symbol=${symbol}`
     );
   }
+
+  fetchInsiderSentiment(symbol: string): Observable<any> {
+    return this.http.get(
+      `${this.backendUrl}/api/stock/insidersentiment?symbol=${symbol}`
+    );
+  }
 }

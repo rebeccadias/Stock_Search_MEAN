@@ -14,6 +14,7 @@ export class SearchComponent implements OnInit {
   stockQuote: any;
   companyPeers: any;
   companyNews: any;
+  insidersentiment: any;
   isOpen: boolean = false;
   currentDate: string = '';
 
@@ -44,6 +45,12 @@ export class SearchComponent implements OnInit {
     this.appService.fetchCompanyNews(ticker).subscribe((companynews) => {
       this.companyNews = companynews;
     });
+    this.appService
+      .fetchInsiderSentiment(ticker)
+      .subscribe((insidersentiment) => {
+        this.insidersentiment = insidersentiment;
+        console.log('insidersentiment', this.insidersentiment);
+      });
   }
 
   checkMarketStatus() {

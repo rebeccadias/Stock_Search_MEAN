@@ -152,6 +152,60 @@
       </div>
     </mat-tab>
     <mat-tab label="Charts"> Content 3 </mat-tab>
-    <mat-tab label="Insights"> Content 4 </mat-tab>
+    <mat-tab label="Insights">
+      <div class="container">
+        <div class="row justify-content-center align-items-center">
+          <div class="col text-center">
+            <h2>Insider Sentiments</h2>
+          </div>
+        </div>
+
+        <!-- First Row with a single element -->
+        <div class="row">
+          <div class="col-12">
+            <div class="p-3 border bg-light">
+              <table class="table" *ngIf="insidersentiment && stockProfile">
+                <thead>
+                  <tr>
+                    <th scope="col">{{ stockProfile.name }}</th>
+                    <th scope="col">MSPR</th>
+                    <th scope="col">Change</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Total</td>
+                    <td>{{ insidersentiment.total }}</td>
+                    <td>{{ insidersentiment.changeTotal }}</td>
+                  </tr>
+                  <tr>
+                    <td>Positive</td>
+                    <td>{{ insidersentiment.positive }}</td>
+                    <td>{{ insidersentiment.positiveChange }}</td>
+                  </tr>
+                  <tr>
+                    <td>Negative</td>
+                    <td>{{ insidersentiment.negative }}</td>
+                    <td>{{ insidersentiment.negativeChange }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Second Row with two elements -->
+        <div class="row">
+          <!-- This column will take full width on small screens and half width on medium screens and up -->
+          <div class="col-sm-12 col-md-6">
+            <div class="p-3 border bg-light">Row 2: Element 1</div>
+          </div>
+          <!-- This column will do the same as the previous one -->
+          <div class="col-sm-12 col-md-6">
+            <div class="p-3 border bg-light">Row 2: Element 2</div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
   </mat-tab-group>
 </div>

@@ -113,6 +113,58 @@ app.get("/api/stock/companynews", async (req, res) => {
   }
 });
 
+app.get("/api/stock/insidersentiment", async (req, res) => {
+  const { symbol } = req.query;
+  try {
+    const response = await axios.get(
+      `https://finnhub.io/api/v1/stock/insider-sentiment?symbol=${symbol}&from=2022-01-01&token=${FINNHUB_API_KEY}`
+    );
+    const data = response.data;
+
+    // Initialize aggregation variables
+    let total = 0;
+    let positive = 0;
+    let negative = 0;
+    let changeTotal = 0;
+    let positiveChange = 0;
+    let negativeChange = 0;
+
+    // Assuming data.data is the array containing the sentiment objects
+    data.data.forEach(item => {
+      const mspr = item.mspr;
+      const change = item.change;
+
+      // Aggregate total mspr
+      total += mspr;
+      // Aggregate positive and negative mspr
+      if (mspr > 0) positive += mspr;
+      if (mspr < 0) negative += mspr;
+
+      // Aggregate total change
+      changeTotal += change;
+      // Aggregate positive and negative change
+      if (change > 0) positiveChange += change;
+      if (change < 0) negativeChange += change;
+    });
+
+    // Round off all values to two decimals
+    const result = {
+      total: parseFloat(total.toFixed(2)),
+      positive: parseFloat(positive.toFixed(2)),
+      negative: parseFloat(negative.toFixed(2)),
+      changeTotal: parseFloat(changeTotal.toFixed(2)),
+      positiveChange: parseFloat(positiveChange.toFixed(2)),
+      negativeChange: parseFloat(negativeChange.toFixed(2)),
+    };
+
+    res.json(result);
+  } catch (error) {
+    console.error("Error fetching stock insider sentiment:", error.message);
+    res.status(500).send("Error fetching stock insider sentiment");
+  }
+});
+
+
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
 
 // Path: backend/models/Post.js
