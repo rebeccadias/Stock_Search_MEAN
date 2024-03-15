@@ -48,4 +48,11 @@ export class AppService {
       `${this.backendUrl}/api/stock/insidersentiment?symbol=${symbol}`
     );
   }
+
+  fetchHistoricalData(symbol: string, from: string, to: string): Observable<any> {
+    return this.http.get(`${this.backendUrl}/api/stock/historical`, {
+      params: { symbol, from, to }
+    });
+  }
+  
 }

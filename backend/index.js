@@ -164,6 +164,19 @@ app.get("/api/stock/insidersentiment", async (req, res) => {
   }
 });
 
+app.get("/api/stock/historical", async (req, res) => {
+  const { symbol, from, to } = req.query;
+  const url = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/1/hour/${from}/${to}?adjusted=true&sort=asc&apiKey=BKNanm3UkObHTvdgfAZNXgV7NrFu8aGr`;
+
+  try {
+    const response = await axios.get(url);
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching historical stock data", error);
+    res.status(500).send("Error fetching historical stock data");
+  }
+});
+
 
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
 

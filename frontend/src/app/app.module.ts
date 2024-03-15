@@ -17,6 +17,7 @@ import { MatInputModule } from '@angular/material/input'; // Import MatInputModu
 import { AppService } from './app.services';
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { HighchartsChartModule } from 'highcharts-angular';
 
 
 
@@ -39,6 +40,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatAutocompleteModule, 
     MatInputModule,  
     MatTabsModule,
+    HighchartsChartModule,
   ],
   providers: [
     provideClientHydration(),
