@@ -7,6 +7,7 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const FINNHUB_API_KEY = "cms30mhr01qlk9b10me0cms30mhr01qlk9b10meg";
+const polygon_API_KEY = "BKNanm3UkObHTvdgfAZNXgV7NrFu8aGr";
 
 app.use(cors());
 app.use(express.json());
@@ -86,7 +87,6 @@ app.get("/api/stock/companynews", async (req, res) => {
   // Format dates to YYYY-MM-DD
   const to = toDate.toISOString().split("T")[0];
   const from = fromDate.toISOString().split("T")[0];
-  console.log(`From date: ${from}, To date: ${to}`);
 
   try {
     const response = await axios.get(
@@ -130,7 +130,7 @@ app.get("/api/stock/insidersentiment", async (req, res) => {
     let negativeChange = 0;
 
     // Assuming data.data is the array containing the sentiment objects
-    data.data.forEach(item => {
+    data.data.forEach((item) => {
       const mspr = item.mspr;
       const change = item.change;
 
@@ -166,17 +166,23 @@ app.get("/api/stock/insidersentiment", async (req, res) => {
 
 app.get("/api/stock/historical", async (req, res) => {
   const { symbol, from, to } = req.query;
-  const url = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/1/hour/${from}/${to}?adjusted=true&sort=asc&apiKey=BKNanm3UkObHTvdgfAZNXgV7NrFu8aGr`;
+
+  // console.log("from date", from);
+  // console.log("to date", to);
+  // const url = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/1/hour/${from}/${to}?adjusted=true&sort=asc&apiKey=${polygon_API_KEY}`;
+
+  const url =
+    "https://api.polygon.io/v2/aggs/ticker/TSLA/range/1/hour/2024-03-14/2024-03-15?adjusted=true&sort=asc&apiKey=BKNanm3UkObHTvdgfAZNXgV7NrFu8aGr";
 
   try {
     const response = await axios.get(url);
+    console.log("response", response.data);
     res.json(response.data);
   } catch (error) {
     console.error("Error fetching historical stock data", error);
     res.status(500).send("Error fetching historical stock data");
   }
 });
-
 
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
 

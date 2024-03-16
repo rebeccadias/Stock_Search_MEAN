@@ -5,7 +5,6 @@ import { AppService } from '../app.services';
 import { forkJoin } from 'rxjs';
 import * as Highcharts from 'highcharts';
 
-
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
@@ -19,7 +18,7 @@ export class SearchComponent implements OnInit {
   insidersentiment: any;
   isOpen: boolean = false;
   currentDate: string = '';
-  Highcharts: typeof Highcharts = Highcharts; // Required for Angular template
+  Highcharts: typeof Highcharts = Highcharts;
   chartOptions!: Highcharts.Options;
 
   constructor(
@@ -119,10 +118,10 @@ export class SearchComponent implements OnInit {
   //   this.stockProfile.ticker = ticker; // Assuming this is where you store the fetched ticker symbol
   //   const toDate = new Date();
   //   const fromDate = new Date(toDate.getFullYear(), toDate.getMonth() - 6, toDate.getDate()); // 6 months ago
-  
+
   //   const to = toDate.toISOString().split('T')[0];
   //   const from = fromDate.toISOString().split('T')[0];
-  
+
   //   this.appService.fetchHistoricalData(ticker, from, to).subscribe(data => {
   //     this.setupChart(data, ticker);
   //   }, error => {
@@ -131,36 +130,43 @@ export class SearchComponent implements OnInit {
   // }
 
   loadHistoricalData(ticker: string) {
-    this.stockProfile.ticker = ticker; // Assuming this is where you store the fetched ticker symbol
+    // this.stockProfile.ticker = ticker;
     const toDate = new Date(); // This can be any day you choose
     toDate.setHours(23, 59, 59, 999); // Set to the end of the day
-  
+
     const fromDate = new Date(toDate);
     fromDate.setHours(0, 0, 0, 0); // Set to the start of the same day
-  
+
     const to = toDate.toISOString().split('T')[0];
     const from = fromDate.toISOString().split('T')[0];
-  
-    this.appService.fetchHistoricalData(ticker, from, to).subscribe(data => {
-      this.setupChart(data, ticker);
-    }, error => {
-      console.error('Error fetching historical data:', error);
-    });
+
+    this.appService.fetchHistoricalData(ticker, from, to).subscribe(
+      (data) => {
+        console.error(' fetching historical data:', data);
+        this.setupChart(data, ticker);
+      },
+      (error) => {
+        console.error('Error fetching historical data:', error);
+      }
+    );
   }
-  
-  
 
   setupChart(data: any, ticker: string) {
     const lineColor = this.stockQuote.d < 0 ? 'red' : 'green';
     console.log(data);
     this.chartOptions = {
-      series: [{
-        type: 'line',
-        data: data.results.map((d: { t: number; c: number }) => [d.t * 1000, d.c]),
-        color: lineColor, // Set color based on condition
-      }],
+      series: [
+        {
+          type: 'line',
+          data: data.results.map((d: { t: number; c: number }) => [
+            d.t * 1000,
+            d.c,
+          ]),
+          color: lineColor, // Set color based on condition
+        },
+      ],
       title: {
-        text: `${ticker} Hourly Price Variation` // Dynamic title
+        text: `${this.stockProfile.ticker} Hourly Price Variation`, // Dynamic title
       },
       xAxis: {
         type: 'datetime',
@@ -172,13 +178,10 @@ export class SearchComponent implements OnInit {
       },
       yAxis: {
         title: {
-          text: 'Price'
+          text: 'Price',
         },
-        opposite: true // Move Y-axis to the right
-      }
+        opposite: true, // Move Y-axis to the right
+      },
     };
   }
-  
-  
-
 }

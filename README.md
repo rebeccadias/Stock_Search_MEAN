@@ -1,4 +1,6 @@
-# Link to Access the project: https://assignment3-frontend-415323.ue.r.appspot.com/search/home
+# Link to Access the project:
+
+https://assignment3-frontend-415323.ue.r.appspot.com/search/home
 
 `npm start` to run the backend application (move to the backend folder)
 
