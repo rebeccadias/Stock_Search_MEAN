@@ -85,6 +85,7 @@ app.get("/api/stock/companynews", async (req, res) => {
   fromDate.setMonth(fromDate.getMonth() - 6);
 
   // Format dates to YYYY-MM-DD
+  //The code calculates two dates: fromDate and toDate. toDate is the current date, and fromDate is set to 6 months before the current date
   const to = toDate.toISOString().split("T")[0];
   const from = fromDate.toISOString().split("T")[0];
 
