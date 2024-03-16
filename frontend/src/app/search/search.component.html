@@ -15,7 +15,7 @@
         <!-- This is the empty star icon -->
       </div>
       <div class="row mb-2 justify-content-center">{{ stockProfile.name }}</div>
-      <div class="row mb-2 justify-content-center">
+      <div class="row mb-2 justify-content-center responsive-iphone12">
         {{ stockProfile.exchange }}
       </div>
       <div class="row justify-content-center">
@@ -49,7 +49,7 @@
         {{ stockQuote.c | number : "1.2-2" }}
       </div>
       <div
-        class="row mb-2 justify-content-center stock-details"
+        class="row mb-2 justify-content-center stock-details-2"
         [ngClass]="{
           'red-text': stockQuote.d < 0,
           'green-text': stockQuote.d >= 0
@@ -138,41 +138,6 @@
     </mat-tab>
 
     <mat-tab label="Top News">
-      <!-- News Item Card -->
-      <!-- <div class="container">
-        <div class="row">
- 
-          <div class="container">
-            <div class="row">
-              <div
-                class="col-sm-12 col-md-6"
-                *ngFor="let newsItem of companyNews"
-              >
-                <div
-                  class="card mb-3"
-                  style="max-width: 540px"
-                  data-toggle="modal"
-                >
-                  <div class="row no-gutters">
-                    <div class="col-md-4">
-                      <img
-                        src="{{ newsItem.image }}"
-                        class="card-img"
-                        alt="{{ newsItem.title }}"
-                      />
-                    </div>
-                    <div class="col-md-8">
-                      <div class="card-body">
-                        <h5 class="card-title">{{ newsItem.title }}</h5>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
       <div class="container">
         <div class="row">
           <div

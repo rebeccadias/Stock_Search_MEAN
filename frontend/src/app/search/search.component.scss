@@ -13,6 +13,9 @@
 }
 
 .stock-details {
+  font-size: 1.4em; /* Adjust the size as needed */
+}
+.stock-details-2 {
   font-size: 1.2em; /* Adjust the size as needed */
 }
 
@@ -28,3 +31,34 @@
   font-size: 0.75em; /* Adjust the size as needed */
   padding-left: 8px; /* Adds padding to the left of the icon */
 }
+
+/* Responsive adjustments for iPhone 12 Pro and similar devices */
+@media (max-width: 390px) {
+  .big-font {
+    font-size: 1.1rem; /* Smaller font size for small screens */
+  }
+
+  .small-icon {
+    font-size: 0.8rem; /* Smaller icon size for small screens */
+  }
+
+  .btn {
+    padding: 0.25rem 0.5rem; /* Smaller padding for buttons */
+    font-size: 0.8rem; /* Smaller font size for buttons */
+    margin-right: 0.5rem; /* Adjusted spacing for buttons */
+  }
+  .stock-details {
+    font-size: 1rem; /* Smaller font size for small screens */
+  }
+  .stock-details-2 {
+    font-size: 0.8rem; /* Smaller font size for small screens */
+  }
+
+  .arrow {
+    font-size: 0.8rem; /* Ensuring arrows also match the smaller font size */
+  }
+.responsive-iphone12{
+  font-size: 0.6rem;
+}
+}
+
