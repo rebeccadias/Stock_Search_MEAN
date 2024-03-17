@@ -35,6 +35,8 @@ export class SearchComponent implements OnInit {
       this.loadStockDetails(ticker);
       this.loadHistoricalData(ticker);
     });
+    this.checkMarketStatus();
+    this.setCurrentDate();
   }
 
   loadStockDetails(ticker: string) {
@@ -44,7 +46,7 @@ export class SearchComponent implements OnInit {
 
     this.appService.fetchStockQuote(ticker).subscribe((quote) => {
       this.stockQuote = quote;
-      this.checkMarketStatus();
+      // this.checkMarketStatus();
     });
     this.appService.fetchCompanyPeers(ticker).subscribe((companypeers) => {
       this.companyPeers = companypeers;
@@ -60,56 +62,90 @@ export class SearchComponent implements OnInit {
       });
   }
 
+  // checkMarketStatus() {
+  //   // Safety check to ensure stockQuote is defined
+  //   if (!this.stockQuote || !this.stockQuote.t) {
+  //     // Handle scenario where stockQuote or stockQuote.t is not yet available
+  //     console.log('stockQuote or stockQuote.t is undefined');
+  //     return;
+  //   }
+  //   console.log('stockQuote.t', this.stockQuote.t);
+
+  //   // Convert stockQuote.t to milliseconds to create a Date object
+  //   const lastUpdateTimestamp = this.stockQuote.t * 1000;
+
+  //   const lastUpdateDate = new Date(lastUpdateTimestamp);
+
+  //   // Extract hours and minutes from the last update timestamp
+  //   const lastUpdateHours = lastUpdateDate.getUTCHours();
+  //   const lastUpdateMinutes = lastUpdateDate.getUTCMinutes();
+
+  //   // Get current time in UTC
+  //   const currentDate = new Date();
+  //   console.log('currentDate', currentDate);
+  //   const currentHours = currentDate.getUTCHours();
+  //   const currentMinutes = currentDate.getUTCMinutes();
+
+  //   // Calculate the total minutes for easier comparison
+  //   const lastUpdateTotalMinutes = lastUpdateHours * 60 + lastUpdateMinutes;
+  //   const currentTotalMinutes = currentHours * 60 + currentMinutes;
+
+  //   // Calculate the absolute difference in minutes
+  //   const differenceInMinutes = Math.abs(
+  //     currentTotalMinutes - lastUpdateTotalMinutes
+  //   );
+
+  //   // Market is considered open if the difference is 5 minutes or less
+  //   this.isOpen = differenceInMinutes <= 5;
+
+  //   if (!this.isOpen) {
+  //     // Market is closed, format the last update timestamp for display
+  //     this.currentDate = lastUpdateDate
+  //       .toISOString()
+  //       .replace('T', ' ')
+  //       .slice(0, 19);
+  //     console.log(
+  //       `Market is closed as of ${this.currentDate}. Stock last updated at ${this.stockQuote.t}`
+  //     );
+  //   } else {
+  //     // Market is open, no need to display the date/time
+  //     console.log('Market is open.');
+  //   }
+  // }
+
   checkMarketStatus() {
-    // Safety check to ensure stockQuote is defined
-    if (!this.stockQuote || !this.stockQuote.t) {
-      // Handle scenario where stockQuote or stockQuote.t is not yet available
-      console.log('stockQuote or stockQuote.t is undefined');
-      return;
-    }
-    console.log('stockQuote.t', this.stockQuote.t);
+    const now = new Date();
+    const utcHour = now.getUTCHours();
+    const utcMinute = now.getUTCMinutes();
 
-    // Convert stockQuote.t to milliseconds to create a Date object
-    const lastUpdateTimestamp = this.stockQuote.t * 1000;
+    // Convert UTC time to Eastern Time (ET)
+    const etHour = (utcHour - 4 + 24) % 24; // Adjust for UTC to ET conversion, assuming UTC-4 for ET. Adjust based on daylight saving.
 
-    const lastUpdateDate = new Date(lastUpdateTimestamp);
-
-    // Extract hours and minutes from the last update timestamp
-    const lastUpdateHours = lastUpdateDate.getUTCHours();
-    const lastUpdateMinutes = lastUpdateDate.getUTCMinutes();
-
-    // Get current time in UTC
-    const currentDate = new Date();
-    console.log('currentDate', currentDate);
-    const currentHours = currentDate.getUTCHours();
-    const currentMinutes = currentDate.getUTCMinutes();
-
-    // Calculate the total minutes for easier comparison
-    const lastUpdateTotalMinutes = lastUpdateHours * 60 + lastUpdateMinutes;
-    const currentTotalMinutes = currentHours * 60 + currentMinutes;
-
-    // Calculate the absolute difference in minutes
-    const differenceInMinutes = Math.abs(
-      currentTotalMinutes - lastUpdateTotalMinutes
-    );
-
-    // Market is considered open if the difference is 5 minutes or less
-    this.isOpen = differenceInMinutes <= 5;
-
-    if (!this.isOpen) {
-      // Market is closed, format the last update timestamp for display
-      this.currentDate = lastUpdateDate
-        .toISOString()
-        .replace('T', ' ')
-        .slice(0, 19);
-      console.log(
-        `Market is closed as of ${this.currentDate}. Stock last updated at ${this.stockQuote.t}`
-      );
-    } else {
-      // Market is open, no need to display the date/time
-      console.log('Market is open.');
-    }
+    // Market hours: 9:30 AM to 4:00 PM ET
+    this.isOpen = etHour > 9 && etHour < 16 || (etHour === 9 && utcMinute >= 30);
+    console.log('Market isOpen:', this.isOpen);
   }
+
+  setCurrentDate() {
+    const now = new Date();
+    // Format date as YYYY-MM-DD
+    const formattedDate = now.toISOString().split('T')[0];
+  
+    // Extract hours, minutes, and seconds for HH:MM:SS format
+    let hours = now.getHours().toString();
+    let minutes = now.getMinutes().toString();
+    let seconds = now.getSeconds().toString();
+  
+    // Ensure hours, minutes, and seconds are always two digits
+    hours = hours.padStart(2, '0');
+    minutes = minutes.padStart(2, '0');
+    seconds = seconds.padStart(2, '0');
+  
+    // Combine date and time in YYYY-MM-DD HH:MM:SS format
+    this.currentDate = `${formattedDate} ${hours}:${minutes}:${seconds}`;
+  }
+  
+  
 
   convertTimestamp(timestamp: number): string {
     if (!timestamp) return '';
