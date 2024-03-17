@@ -20,6 +20,30 @@ mongoose
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("Could not connect to MongoDB Atlas", err));
 
+// mongoose
+//   .connect(
+//     "mongodb+srv://bhavenvi:12345@cluster0.dzwa3me.mongodb.net/?retryWrites=true&w=majority",
+//     {}
+//   )
+//   .then(() => console.log("Connected to MongoDB Atlas"))
+//   .catch((err) => console.error("Could not connect to MongoDB Atlas", err));
+
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  balance: { type: Number, required: true },
+  stocks: [
+    {
+      symbol: String,
+      quantity: Number,
+      action: String, // "BUY" or "SELL"
+      price: Number,
+      date: { type: Date, default: Date.now }
+    }
+  ]
+});
+
+const User = mongoose.model('User', userSchema);
+
 app.get("/", (req, res) => {
   res.send("Hello, Express!");
 });
@@ -184,6 +208,94 @@ app.get("/api/stock/historical", async (req, res) => {
     res.status(500).send("Error fetching historical stock data");
   }
 });
+
+app.post("/api/user/init", async (req, res) => {
+  const { name } = req.body;
+
+  try {
+    let user = await User.findOne({ name });
+    if (!user) {
+      user = new User({
+        name,
+        balance: 25000, // Initialize with $25,000
+        stocks: []
+      });
+      await user.save();
+    }
+    res.json(user);
+  } catch (error) {
+    console.error("Error initializing user", error);
+    res.status(500).send("Error initializing user");
+  }
+});
+
+app.post("/api/user/buy", async (req, res) => {
+  const { name, symbol, quantity, price } = req.body;
+
+  try {
+    const totalCost = quantity * price;
+    const user = await User.findOne({ name });
+
+    if (!user || user.balance < totalCost) {
+      return res.status(400).send("Insufficient balance or user not found");
+    }
+
+    user.balance -= totalCost;
+    user.stocks.push({ symbol, quantity, action: "BUY", price });
+    await user.save();
+
+    res.json({ message: "Stock purchased", user });
+  } catch (error) {
+    console.error("Error buying stock", error);
+    res.status(500).send("Error buying stock");
+  }
+});
+
+app.post("/api/user/sell", async (req, res) => {
+  const { name, symbol, quantity, price } = req.body;
+
+  try {
+    const user = await User.findOne({ name });
+    const totalSaleAmount = quantity * price;
+
+    // Check if user owns the stock and has enough quantity to sell
+    // This is a simplified check; you'll likely need more complex logic
+    // to handle partial sells or multiple purchases of the same stock
+    const stockIndex = user.stocks.findIndex(stock => stock.symbol === symbol && stock.quantity >= quantity && stock.action === "BUY");
+    if (stockIndex === -1) {
+      return res.status(400).send("Stock not owned or insufficient quantity");
+    }
+
+    user.balance += totalSaleAmount;
+    // Adjust the quantity or remove the stock from the profile if all shares are sold
+    // This is a simplified approach
+    user.stocks[stockIndex].quantity -= quantity;
+    if (user.stocks[stockIndex].quantity === 0) user.stocks.splice(stockIndex, 1);
+
+    await user.save();
+
+    res.json({ message: "Stock sold", user });
+  } catch (error) {
+    console.error("Error selling stock", error);
+    res.status(500).send("Error selling stock");
+  }
+});
+
+app.get("/api/user/wallet", async (req, res) => {
+  const { name } = req.query;
+
+  try {
+    const user = await User.findOne({ name });
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    res.json({ name: user.name, balance: user.balance });
+  } catch (error) {
+    console.error("Error retrieving user balance", error);
+    res.status(500).send("Error retrieving user balance");
+  }
+});
+
 
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
 

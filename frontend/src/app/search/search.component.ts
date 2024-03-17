@@ -4,6 +4,8 @@ import { ActivatedRoute } from '@angular/router';
 import { AppService } from '../app.services';
 import { forkJoin } from 'rxjs';
 import * as Highcharts from 'highcharts';
+import { MatDialog } from '@angular/material/dialog';
+import { BuyDialogComponent } from '../buy-dialog/buy-dialog.component';
 
 @Component({
   selector: 'app-search',
@@ -22,6 +24,7 @@ export class SearchComponent implements OnInit {
   chartOptions!: Highcharts.Options;
 
   constructor(
+    public dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
     private appService: AppService
   ) {}
@@ -184,4 +187,35 @@ export class SearchComponent implements OnInit {
       },
     };
   }
+
+  // Part of SearchComponent
+
+currentUser: string = 'JohnDoe'; // Example user name, replace with actual user data
+
+openBuyDialog(currentPrice: number): void {
+  this.appService.getUserBalance(this.currentUser).subscribe({
+    next: (res) => {
+      const balance = res.balance;
+      const dialogRef = this.dialog.open(BuyDialogComponent, {
+        width: '450px',
+        position: { top: '10px' },
+        data: { ticker: this.stockProfile.ticker, currentPrice, moneyInWallet: balance }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.appService.buyStock(this.currentUser, this.stockProfile.ticker, result.quantity, currentPrice).subscribe({
+            next: (buyResult) => {
+              console.log('Stock purchased successfully', buyResult);
+              // Here you can refresh the balance or update the UI accordingly
+            },
+            error: (error) => console.error('Error purchasing stock', error)
+          });
+        }
+      });
+    },
+    error: (error) => console.error('Error fetching user balance', error)
+  });
+}
+
 }

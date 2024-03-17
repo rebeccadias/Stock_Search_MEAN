@@ -6,8 +6,8 @@ import { Observable, map } from 'rxjs';
   providedIn: 'root',
 })
 export class AppService {
-  // private backendUrl = 'http://localhost:3000';
-  private backendUrl = 'https://assignment3-backend.uw.r.appspot.com/';
+  private backendUrl = 'http://localhost:3000';
+  // private backendUrl = 'https://assignment3-backend.uw.r.appspot.com/';
 
   constructor(private http: HttpClient) {}
 
@@ -54,5 +54,16 @@ export class AppService {
       params: { symbol, from, to }
     });
   }
+
+  // In app.service.ts
+
+  getUserBalance(name: string): Observable<any> {
+    return this.http.get(`${this.backendUrl}/api/user/wallet`, { params: { name } });
+  }
+
+  buyStock(name: string, symbol: string, quantity: number, price: number): Observable<any> {
+    return this.http.post(`${this.backendUrl}/api/user/buy`, { name, symbol, quantity, price });
+  }
+
   
 }

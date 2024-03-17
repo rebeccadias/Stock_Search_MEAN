@@ -19,7 +19,9 @@
         {{ stockProfile.exchange }}
       </div>
       <div class="row justify-content-center">
-        <button type="button" class="btn btn-success mr-1">Buy</button>
+        <!-- <button type="button" class="btn btn-success mr-1">Buy</button>
+         -->
+        <button type="button" class="btn btn-success mr-1" (click)="openBuyDialog(stockQuote.c)">Buy</button>
         <button type="button" class="btn btn-danger">Sell</button>
       </div>
     </div>

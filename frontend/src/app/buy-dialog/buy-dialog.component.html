@@ -1,0 +1,26 @@
+<h2 mat-dialog-title>
+    <span>{{ data.ticker }}</span>
+    <span class="close-icon" (click)="closeDialog()">&#x2715;</span>
+  </h2>
+  
+  <hr/>
+  
+  <mat-dialog-content class="mat-typography">
+    <div class="info-line">
+      <span>Current Price: ${{ currentPrice }}</span>
+    </div>
+    <div class="info-line">
+        <span>Money in Wallet: ${{ moneyInWallet }}</span>
+    </div>
+    <div class="quantity-input">
+        Quantity: <input type="number" [(ngModel)]="quantity" min="1">
+      </div>
+  </mat-dialog-content>
+  
+  <hr/>
+  
+  <mat-dialog-actions class="action-row">
+    <span>Total: ${{ totalCost }}</span>
+    <button mat-raised-button color="primary" [disabled]="!canBuy" [mat-dialog-close]="{quantity: quantity}">Buy</button>
+  </mat-dialog-actions>
+  

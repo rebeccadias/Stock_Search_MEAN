@@ -18,8 +18,9 @@ import { AppService } from './app.services';
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { HighchartsChartModule } from 'highcharts-angular';
-
-
+import { BuyDialogComponent } from './buy-dialog/buy-dialog.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog'; 
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { HighchartsChartModule } from 'highcharts-angular';
     SearchComponent,
     WatchlistComponent,
     PortfolioComponent,
-    SearchBarComponent
+    SearchBarComponent,
+    BuyDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -41,6 +43,8 @@ import { HighchartsChartModule } from 'highcharts-angular';
     MatInputModule,  
     MatTabsModule,
     HighchartsChartModule,
+    MatDialogModule,
+    MatButtonModule,
   ],
   providers: [
     provideClientHydration(),
