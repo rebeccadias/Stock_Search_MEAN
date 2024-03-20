@@ -1,9 +1,8 @@
 <link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
-  integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
-  crossorigin="anonymous"
 />
+<!-- jQuery, Popper.js, and Bootstrap JS -->
 
 <div class="site-container">
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -21,12 +20,14 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
+     
       <ul class="navbar-nav mr-auto"></ul>
+      <div class="navbar-nav flex-lg-row text-left-sm">
       <button
         class="btn btn-outline-success my-2 my-sm-0"
         type="button"
         routerLink="search/:ticker"
-        routerLinkActive="active-link"
+        [class.active-link]="isActiveSearch"
       >
         Search
       </button>
@@ -47,6 +48,7 @@
       >
         Portfolio
       </button>
+    </div>
     </div>
   </nav>
   <main class="content">
