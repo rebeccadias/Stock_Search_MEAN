@@ -1,5 +1,8 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
+import {
+  BrowserModule,
+  provideClientHydration,
+} from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -20,7 +23,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { BuyDialogComponent } from './buy-dialog/buy-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog'; 
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -30,7 +34,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     WatchlistComponent,
     PortfolioComponent,
     SearchBarComponent,
-    BuyDialogComponent
+    BuyDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -39,18 +43,15 @@ import { MatDialogModule } from '@angular/material/dialog';
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
-    MatAutocompleteModule, 
-    MatInputModule,  
+    MatAutocompleteModule,
+    MatInputModule,
     MatTabsModule,
     HighchartsChartModule,
     MatDialogModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
   ],
-  providers: [
-    provideClientHydration(),
-    provideAnimationsAsync(),
-    AppService,
-  ],
-  bootstrap: [AppComponent]
+  providers: [provideClientHydration(), provideAnimationsAsync(), AppService],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
