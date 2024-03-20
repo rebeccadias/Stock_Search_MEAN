@@ -45,16 +45,12 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 
 const watchlistSchema = new mongoose.Schema({
-  stocks: [
-    {
-      ticker: String,
-      name: String,
-      price: Number,
-      change: Number,
-      changePercent: Number,
-      dateAdded: { type: Date, default: Date.now },
-    },
-  ],
+  ticker: String,
+  name: String,
+  price: Number,
+  change: Number,
+  changePercent: Number,
+  dateAdded: { type: Date, default: Date.now },
 });
 
 const Watchlist = mongoose.model("Watchlist", watchlistSchema);
@@ -325,36 +321,25 @@ app.post("/api/user/watchlist", async (req, res) => {
   const { wticker, wname, wprice, wchange, wchangePercent } = req.body;
 
   try {
-    // Retrieve the existing watchlist
-    // Assuming there's a single watchlist document, or you have some logic to select which one to update
-    let watchlist = await Watchlist.findOne(); // Find the first watchlist for simplicity
-
-    // If no watchlist exists, create a new one
-    if (!watchlist) {
-      watchlist = new Watchlist({ stocks: [] });
-    }
-
     // Check if the stock is already in the watchlist
-    const stockExists = watchlist.stocks.some(
-      (stock) => stock.ticker === wticker
-    );
+    const stockExists = await Watchlist.findOne({ ticker: wticker });
     if (stockExists) {
       return res.status(400).send("Stock already in watchlist");
     }
 
-    // Add the new stock to the watchlist
-    watchlist.stocks.push({
+    // Create a new stock document in the watchlist
+    const newStock = new Watchlist({
       ticker: wticker,
       name: wname,
       price: wprice,
       change: wchange,
       changePercent: wchangePercent,
-      dateAdded: new Date(), // Assuming you want to record when it was added
+      dateAdded: new Date(), // This is optional since default is Date.now()
     });
 
-    await watchlist.save(); // Save the updated watchlist
+    await newStock.save(); // Save the new stock document
 
-    res.json({ message: "Stock added to watchlist", watchlist });
+    res.json({ message: "Stock added to watchlist", newStock });
   } catch (error) {
     console.error("Error adding stock to watchlist", error);
     res.status(500).send("Error adding stock to watchlist");
