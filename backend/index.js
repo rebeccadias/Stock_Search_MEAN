@@ -356,7 +356,23 @@ app.get("/api/all/watchlist", async (req, res) => {
   }
 });
 
+app.delete("/api/watchlist/delete", async (req, res) => {
+  const { ticker } = req.query;
+  console.log("ticker", ticker);
 
+  try {
+    const result = await Watchlist.deleteOne({ ticker: ticker });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).send("Stock not found in watchlist");
+    }
+
+    res.send({ message: "Stock removed from watchlist" });
+  } catch (error) {
+    console.error("Error removing stock from watchlist", error);
+    res.status(500).send("Error removing stock from watchlist");
+  }
+});
 
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
 

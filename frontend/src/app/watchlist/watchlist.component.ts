@@ -22,4 +22,17 @@ export class WatchlistComponent implements OnInit {
       },
     });
   }
+
+  deleteStock(ticker: string): void {
+    this.appService.deleteStockFromWatchlist(ticker).subscribe({
+      next: () => {
+        // Remove the stock from the local array to update UI
+        this.watchlistEntries = this.watchlistEntries.filter(
+          (entry) => entry.ticker !== ticker
+        );
+      },
+      error: (error: any) =>
+        console.error('Error removing stock from watchlist', error),
+    });
+  }
 }

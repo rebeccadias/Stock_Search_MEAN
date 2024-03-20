@@ -91,4 +91,10 @@ export class AppService {
   getWatchlist(): Observable<any[]> {
     return this.http.get<any[]>(`${this.backendUrl}/api/all/watchlist`);
   }
+
+  deleteStockFromWatchlist(ticker: string): Observable<any> {
+    return this.http.delete(`${this.backendUrl}/api/watchlist/delete`, {
+      params: { ticker },
+    });
+  }
 }
