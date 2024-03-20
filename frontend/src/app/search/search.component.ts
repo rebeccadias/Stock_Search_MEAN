@@ -21,6 +21,7 @@ export class SearchComponent implements OnInit {
   isOpen: boolean = false;
   currentDate: string = '';
   Highcharts: typeof Highcharts = Highcharts;
+
   chartOptions!: Highcharts.Options;
 
   constructor(
@@ -58,7 +59,7 @@ export class SearchComponent implements OnInit {
       .fetchInsiderSentiment(ticker)
       .subscribe((insidersentiment) => {
         this.insidersentiment = insidersentiment;
-        console.log('insidersentiment', this.insidersentiment);
+        // console.log('insidersentiment', this.insidersentiment);
       });
   }
 
@@ -122,7 +123,8 @@ export class SearchComponent implements OnInit {
     const etHour = (utcHour - 4 + 24) % 24; // Adjust for UTC to ET conversion, assuming UTC-4 for ET. Adjust based on daylight saving.
 
     // Market hours: 9:30 AM to 4:00 PM ET
-    this.isOpen = etHour > 9 && etHour < 16 || (etHour === 9 && utcMinute >= 30);
+    this.isOpen =
+      (etHour > 9 && etHour < 16) || (etHour === 9 && utcMinute >= 30);
     console.log('Market isOpen:', this.isOpen);
   }
 
@@ -130,22 +132,20 @@ export class SearchComponent implements OnInit {
     const now = new Date();
     // Format date as YYYY-MM-DD
     const formattedDate = now.toISOString().split('T')[0];
-  
+
     // Extract hours, minutes, and seconds for HH:MM:SS format
     let hours = now.getHours().toString();
     let minutes = now.getMinutes().toString();
     let seconds = now.getSeconds().toString();
-  
+
     // Ensure hours, minutes, and seconds are always two digits
     hours = hours.padStart(2, '0');
     minutes = minutes.padStart(2, '0');
     seconds = seconds.padStart(2, '0');
-  
+
     // Combine date and time in YYYY-MM-DD HH:MM:SS format
     this.currentDate = `${formattedDate} ${hours}:${minutes}:${seconds}`;
   }
-  
-  
 
   convertTimestamp(timestamp: number): string {
     if (!timestamp) return '';
@@ -181,7 +181,7 @@ export class SearchComponent implements OnInit {
 
     this.appService.fetchHistoricalData(ticker, from, to).subscribe(
       (data) => {
-        console.error(' fetching historical data:', data);
+        // console.error(' fetching historical data:', data);
         this.setupChart(data, ticker);
       },
       (error) => {
@@ -192,7 +192,7 @@ export class SearchComponent implements OnInit {
 
   setupChart(data: any, ticker: string) {
     const lineColor = this.stockQuote.d < 0 ? 'red' : 'green';
-    console.log(data);
+    // console.log(data);
     this.chartOptions = {
       series: [
         {
@@ -226,32 +226,66 @@ export class SearchComponent implements OnInit {
 
   // Part of SearchComponent
 
-currentUser: string = 'JohnDoe'; // Example user name, replace with actual user data
+  currentUser: string = 'RebeccaDias'; // Example user name, replace with actual user data
 
-openBuyDialog(currentPrice: number): void {
-  this.appService.getUserBalance(this.currentUser).subscribe({
-    next: (res) => {
-      const balance = res.balance;
-      const dialogRef = this.dialog.open(BuyDialogComponent, {
-        width: '450px',
-        position: { top: '10px' },
-        data: { ticker: this.stockProfile.ticker, currentPrice, moneyInWallet: balance }
-      });
+  openBuyDialog(currentPrice: number): void {
+    this.appService.getUserBalance(this.currentUser).subscribe({
+      next: (res) => {
+        const balance = res.balance;
+        const dialogRef = this.dialog.open(BuyDialogComponent, {
+          width: '450px',
+          position: { top: '10px' },
+          data: {
+            ticker: this.stockProfile.ticker,
+            currentPrice,
+            moneyInWallet: balance,
+          },
+        });
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          this.appService.buyStock(this.currentUser, this.stockProfile.ticker, result.quantity, currentPrice).subscribe({
-            next: (buyResult) => {
-              console.log('Stock purchased successfully', buyResult);
-              // Here you can refresh the balance or update the UI accordingly
-            },
-            error: (error) => console.error('Error purchasing stock', error)
-          });
-        }
-      });
-    },
-    error: (error) => console.error('Error fetching user balance', error)
-  });
-}
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result) {
+            this.appService
+              .buyStock(
+                this.currentUser,
+                this.stockProfile.ticker,
+                result.quantity,
+                currentPrice
+              )
+              .subscribe({
+                next: (buyResult) => {
+                  console.log('Stock purchased successfully', buyResult);
+                  // Here you can refresh the balance or update the UI accordingly
+                },
+                error: (error) =>
+                  console.error('Error purchasing stock', error),
+              });
+          }
+        });
+      },
+      error: (error) => console.error('Error fetching user balance', error),
+    });
+  }
 
+  toggleFavorite(
+    watchlistedStockProfile: any,
+    watchlistedstockQuote: any
+  ): void {
+    const stockData = {
+      wticker: watchlistedStockProfile.ticker,
+      wname: watchlistedStockProfile.name,
+      wprice: watchlistedstockQuote.c,
+      wchange: watchlistedstockQuote.d,
+      wchangePercent: watchlistedstockQuote.dp,
+    };
+
+    this.appService.postWatclistedStock(stockData).subscribe({
+      next: (response) => {
+        console.log('Stock added to favorites:', response);
+        // Optionally, refresh the watchlist or update UI accordingly
+      },
+      error: (error) => {
+        console.error('Error adding stock to favorites:', error);
+      },
+    });
+  }
 }

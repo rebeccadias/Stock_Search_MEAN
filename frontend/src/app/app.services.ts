@@ -49,21 +49,43 @@ export class AppService {
     );
   }
 
-  fetchHistoricalData(symbol: string, from: string, to: string): Observable<any> {
+  fetchHistoricalData(
+    symbol: string,
+    from: string,
+    to: string
+  ): Observable<any> {
     return this.http.get(`${this.backendUrl}/api/stock/historical`, {
-      params: { symbol, from, to }
+      params: { symbol, from, to },
     });
   }
 
   // In app.service.ts
 
   getUserBalance(name: string): Observable<any> {
-    return this.http.get(`${this.backendUrl}/api/user/wallet`, { params: { name } });
+    return this.http.get(`${this.backendUrl}/api/user/wallet`, {
+      params: { name },
+    });
   }
 
-  buyStock(name: string, symbol: string, quantity: number, price: number): Observable<any> {
-    return this.http.post(`${this.backendUrl}/api/user/buy`, { name, symbol, quantity, price });
+  buyStock(
+    name: string,
+    symbol: string,
+    quantity: number,
+    price: number
+  ): Observable<any> {
+    return this.http.post(`${this.backendUrl}/api/user/buy`, {
+      name,
+      symbol,
+      quantity,
+      price,
+    });
   }
 
-  
+  // In app.service
+  postWatclistedStock(watchlistedStockData: any): Observable<any> {
+    return this.http.post(
+      `${this.backendUrl}/api/user/watchlist`,
+      watchlistedStockData
+    );
+  }
 }

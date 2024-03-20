@@ -37,12 +37,29 @@ const userSchema = new mongoose.Schema({
       quantity: Number,
       action: String, // "BUY" or "SELL"
       price: Number,
-      date: { type: Date, default: Date.now }
-    }
-  ]
+      date: { type: Date, default: Date.now },
+    },
+  ],
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
+
+const watchlistSchema = new mongoose.Schema({
+  stocks: [
+    {
+      ticker: String,
+      name: String,
+      price: Number,
+      change: Number,
+      changePercent: Number,
+      dateAdded: { type: Date, default: Date.now },
+    },
+  ],
+});
+
+const Watchlist = mongoose.model("Watchlist", watchlistSchema);
+
+module.exports = Watchlist;
 
 app.get("/", (req, res) => {
   res.send("Hello, Express!");
@@ -201,7 +218,7 @@ app.get("/api/stock/historical", async (req, res) => {
 
   try {
     const response = await axios.get(url);
-    console.log("response", response.data);
+    // console.log("response", response.data);
     res.json(response.data);
   } catch (error) {
     console.error("Error fetching historical stock data", error);
@@ -218,7 +235,7 @@ app.post("/api/user/init", async (req, res) => {
       user = new User({
         name,
         balance: 25000, // Initialize with $25,000
-        stocks: []
+        stocks: [],
       });
       await user.save();
     }
@@ -261,7 +278,12 @@ app.post("/api/user/sell", async (req, res) => {
     // Check if user owns the stock and has enough quantity to sell
     // This is a simplified check; you'll likely need more complex logic
     // to handle partial sells or multiple purchases of the same stock
-    const stockIndex = user.stocks.findIndex(stock => stock.symbol === symbol && stock.quantity >= quantity && stock.action === "BUY");
+    const stockIndex = user.stocks.findIndex(
+      (stock) =>
+        stock.symbol === symbol &&
+        stock.quantity >= quantity &&
+        stock.action === "BUY"
+    );
     if (stockIndex === -1) {
       return res.status(400).send("Stock not owned or insufficient quantity");
     }
@@ -270,7 +292,8 @@ app.post("/api/user/sell", async (req, res) => {
     // Adjust the quantity or remove the stock from the profile if all shares are sold
     // This is a simplified approach
     user.stocks[stockIndex].quantity -= quantity;
-    if (user.stocks[stockIndex].quantity === 0) user.stocks.splice(stockIndex, 1);
+    if (user.stocks[stockIndex].quantity === 0)
+      user.stocks.splice(stockIndex, 1);
 
     await user.save();
 
@@ -296,6 +319,47 @@ app.get("/api/user/wallet", async (req, res) => {
   }
 });
 
+app.post("/api/user/watchlist", async (req, res) => {
+  console.log(req.body);
+
+  const { wticker, wname, wprice, wchange, wchangePercent } = req.body;
+
+  try {
+    // Retrieve the existing watchlist
+    // Assuming there's a single watchlist document, or you have some logic to select which one to update
+    let watchlist = await Watchlist.findOne(); // Find the first watchlist for simplicity
+
+    // If no watchlist exists, create a new one
+    if (!watchlist) {
+      watchlist = new Watchlist({ stocks: [] });
+    }
+
+    // Check if the stock is already in the watchlist
+    const stockExists = watchlist.stocks.some(
+      (stock) => stock.ticker === wticker
+    );
+    if (stockExists) {
+      return res.status(400).send("Stock already in watchlist");
+    }
+
+    // Add the new stock to the watchlist
+    watchlist.stocks.push({
+      ticker: wticker,
+      name: wname,
+      price: wprice,
+      change: wchange,
+      changePercent: wchangePercent,
+      dateAdded: new Date(), // Assuming you want to record when it was added
+    });
+
+    await watchlist.save(); // Save the updated watchlist
+
+    res.json({ message: "Stock added to watchlist", watchlist });
+  } catch (error) {
+    console.error("Error adding stock to watchlist", error);
+    res.status(500).send("Error adding stock to watchlist");
+  }
+});
 
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
 
