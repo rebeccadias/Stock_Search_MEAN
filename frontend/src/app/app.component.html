@@ -4,48 +4,63 @@
   integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
   crossorigin="anonymous"
 />
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Stock Search</a>
-  <button
-    class="navbar-toggler"
-    type="button"
-    data-toggle="collapse"
-    data-target="#navbarSupportedContent"
-    aria-controls="navbarSupportedContent"
-    aria-expanded="false"
-    aria-label="Toggle navigation"
-  >
-    <span class="navbar-toggler-icon"></span>
-  </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto"></ul>
+<div class="site-container">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Stock Search</a>
     <button
-      class="btn btn-outline-success my-2 my-sm-0"
+      class="navbar-toggler"
       type="button"
-      routerLink="search/:ticker"
-      routerLinkActive="active-link"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
     >
-      Search
-    </button>
-    <button
-      class="btn btn-outline-success my-2 my-sm-0"
-      type="button"
-      routerLink="/watchlist"
-      routerLinkActive="active-link"
-    >
-      Watchlist
+      <span class="navbar-toggler-icon"></span>
     </button>
 
-    <button
-      class="btn btn-outline-success my-2 my-sm-0"
-      type="button"
-      routerLink="/portfolio"
-      routerLinkActive="active-link"
-    >
-      Portfolio
-    </button>
-  </div>
-</nav>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto"></ul>
+      <button
+        class="btn btn-outline-success my-2 my-sm-0"
+        type="button"
+        routerLink="search/:ticker"
+        routerLinkActive="active-link"
+      >
+        Search
+      </button>
+      <button
+        class="btn btn-outline-success my-2 my-sm-0"
+        type="button"
+        routerLink="/watchlist"
+        routerLinkActive="active-link"
+      >
+        Watchlist
+      </button>
 
-<router-outlet />
+      <button
+        class="btn btn-outline-success my-2 my-sm-0"
+        type="button"
+        routerLink="/portfolio"
+        routerLinkActive="active-link"
+      >
+        Portfolio
+      </button>
+    </div>
+  </nav>
+  <main class="content">
+    <router-outlet />
+  </main>
+  <footer>
+    <div class="wordings">
+      <strong>Powered by </strong>
+      <a
+        target="_blank"
+        href="https://finnhub.io"
+        style="text-decoration: underline"
+        >Finnhub.io</a
+      >
+    </div>
+  </footer>
+</div>
