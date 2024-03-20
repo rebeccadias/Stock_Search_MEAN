@@ -346,6 +346,18 @@ app.post("/api/user/watchlist", async (req, res) => {
   }
 });
 
+app.get("/api/all/watchlist", async (req, res) => {
+  try {
+    const watchlist = await Watchlist.find({}); // Fetch all documents
+    res.json(watchlist);
+  } catch (error) {
+    console.error("Error retrieving watchlist", error);
+    res.status(500).send("Error retrieving watchlist");
+  }
+});
+
+
+
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
 
 // Path: backend/models/Post.js

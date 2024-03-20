@@ -1,2 +1,27 @@
-<p>watchlist works!</p>
-
+<div class="container">
+  <div class="row">
+    <!-- Iterate over each entry in watchlistEntries -->
+    <div class="col-md-4" *ngFor="let entry of watchlistEntries">
+      <div class="card mb-4 box-shadow">
+        <div class="card-header">
+          <!-- Display the stock name -->
+          <h4 class="my-0 font-weight-normal">{{ entry.name }}</h4>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled mt-3 mb-4">
+            <li>Ticker: {{ entry.ticker }}</li>
+            <li>Change: {{ entry.change }}</li>
+            <li>Change Percent: {{ entry.changePercent }}%</li>
+          </ul>
+          <!-- You can add buttons or links for actions here -->
+          <button
+            type="button"
+            class="btn btn-lg btn-block btn-outline-primary"
+          >
+            View
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

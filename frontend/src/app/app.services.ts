@@ -88,4 +88,7 @@ export class AppService {
       watchlistedStockData
     );
   }
+  getWatchlist(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.backendUrl}/api/all/watchlist`);
+  }
 }
