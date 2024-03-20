@@ -1,0 +1,36 @@
+.row-spacing {
+  margin-bottom: 15px; /* Adjust the spacing as needed */
+  border: 1px solid #dee2e6; /* Bootstrap's border color for consistency */
+  border-radius: 0.25rem; /* Optional: adds rounded corners */
+}
+.container {
+  padding-top: 20px;
+}
+
+.red-text {
+  color: red;
+}
+
+.green-text {
+  color: green;
+}
+
+.big-text {
+  font-size: large;
+}
+
+.wordings {
+  font-size: x-large;
+  padding-bottom: 20px;
+}
+
+@media only screen and (max-width: 390px) {
+  .wordings {
+    font-size: large; /* or any specific size you prefer */
+  }
+}
+
+.error-design {
+  background-color: #fff1c8;
+  padding: 20px;
+}

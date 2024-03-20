@@ -1,35 +1,63 @@
+<!-- (click)="redirectToPage('/your-target-route')" -->
 <div class="container">
-  <div class="row">
-    <!-- Iterate over each entry in watchlistEntries -->
-    <div class="col-md-4" *ngFor="let entry of watchlistEntries">
-      <div class="card mb-4 box-shadow">
-        <div class="card-header">
-          <!-- Display the stock name -->
-          <h4 class="my-0 font-weight-normal">{{ entry.name }}</h4>
-        </div>
-        <div class="card-body">
-          <ul class="list-unstyled mt-3 mb-4">
-            <li>Ticker: {{ entry.ticker }}</li>
-            <li>Change: {{ entry.change }}</li>
-            <li>Change Percent: {{ entry.changePercent }}%</li>
-          </ul>
-          <!-- You can add buttons or links for actions here -->
-          <button
-            type="button"
-            class="btn btn-lg btn-block btn-outline-primary"
+  <div *ngIf="watchlistEntries.length > 0; else noEntries">
+    <div class="row">
+      <div class="wordings">My Watchlist</div>
+    </div>
+    <div
+      class="row row-spacing"
+      *ngFor="let entry of watchlistEntries"
+      (click)="redirectToPage('/search/' + entry.ticker)"
+    >
+      <div class="col justify-content-start d-flex">
+        <button
+          type="button"
+          class="close"
+          aria-label="Close"
+          (click)="deleteStock(entry.ticker); $event.stopPropagation()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="w-100"></div>
+      <!-- This creates a new line break in the row -->
+      <div class="col">
+        <div class="big-text">{{ entry.ticker }}</div>
+        <div>{{ entry.name }}</div>
+      </div>
+      <div
+        class="col"
+        [ngClass]="{
+          'red-text': entry.change < 0,
+          'green-text': entry.change >= 0
+        }"
+      >
+        <div class="big-text">{{ entry.price | number : "1.2-2" }}</div>
+        <div>
+          <span *ngIf="entry.change < 0" class="arrow red-text">&#x25BC;</span>
+          <!-- Downward arrow -->
+          <span *ngIf="entry.change >= 0" class="arrow green-text"
+            >&#x25B2;</span
           >
-            View
-          </button>
+          <!-- Upward arrow -->
+          {{ entry.change | number : "1.2-2" }} ({{
+            entry.changePercent | number : "1.2-2"
+          }}%)
         </div>
       </div>
-      <button
-        type="button"
-        class="close"
-        aria-label="Close"
-        (click)="deleteStock(entry.ticker)"
-      >
-        <span aria-hidden="true">&times;</span>
-      </button>
     </div>
   </div>
+  <ng-template #noEntries>
+    <div class="row">
+      <div class="wordings">My Watchlist</div>
+    </div>
+    <div class="row">
+      <div class="col text-center">
+        <p class="error-design">
+          Currently you don't have any stock in your watchlist.
+        </p>
+      </div>
+    </div>
+  </ng-template>
 </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AppService } from '../app.services';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-watchlist',
@@ -9,7 +10,7 @@ import { AppService } from '../app.services';
 export class WatchlistComponent implements OnInit {
   watchlistEntries: any[] = [];
 
-  constructor(private appService: AppService) {} // Adjusted to AppService
+  constructor(private appService: AppService, private router: Router) {} // Adjusted to AppService
 
   ngOnInit(): void {
     this.appService.getWatchlist().subscribe({
@@ -21,6 +22,10 @@ export class WatchlistComponent implements OnInit {
         console.error('Error fetching watchlist', error);
       },
     });
+  }
+
+  redirectToPage(url: string): void {
+    this.router.navigate([url]);
   }
 
   deleteStock(ticker: string): void {
