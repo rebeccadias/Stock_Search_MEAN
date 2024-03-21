@@ -7,6 +7,7 @@ import * as Highcharts from 'highcharts';
 import { MatDialog } from '@angular/material/dialog';
 import { BuyDialogComponent } from '../buy-dialog/buy-dialog.component';
 
+import { NewsModalComponent } from '../news-modal/news-modal.component';
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
@@ -23,6 +24,7 @@ export class SearchComponent implements OnInit {
   Highcharts: typeof Highcharts = Highcharts;
 
   chartOptions!: Highcharts.Options;
+  selectedNewsItem: any;
 
   constructor(
     public dialog: MatDialog,
@@ -285,6 +287,17 @@ export class SearchComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error adding stock to favorites:', error);
+      },
+    });
+  }
+
+  openNewsModal(news: any) {
+    console.log('news', news);
+    this.dialog.open(NewsModalComponent, {
+      width: '450px',
+      position: { top: '10px' },
+      data: {
+        news: news,
       },
     });
   }

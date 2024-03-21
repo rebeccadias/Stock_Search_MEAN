@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>{{ data.news.headline }}</h1>
+<mat-dialog-content>
+  <p><strong>Source:</strong> {{ data.news.source }}</p>
+  <p>
+    <strong>Published Date:</strong> {{ data.news.datetime | date : "medium" }}
+  </p>
+  <p><strong>Title:</strong> {{ data.news.headline }}</p>
+  <p><strong>Description:</strong> {{ data.news.summary }}</p>
+  <p>
+    <strong>URL:</strong>
+    <a href="{{ data.news.url }}" target="_blank">{{ data.news.url }}</a>
+  </p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>
