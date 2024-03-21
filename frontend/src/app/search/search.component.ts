@@ -6,6 +6,7 @@ import { forkJoin } from 'rxjs';
 import * as Highcharts from 'highcharts';
 import { MatDialog } from '@angular/material/dialog';
 import { BuyDialogComponent } from '../buy-dialog/buy-dialog.component';
+import { Router, NavigationEnd } from '@angular/router';
 
 import { NewsModalComponent } from '../news-modal/news-modal.component';
 @Component({
@@ -29,13 +30,39 @@ export class SearchComponent implements OnInit {
   constructor(
     public dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
-    private appService: AppService
+    private appService: AppService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
+    // this.activatedRoute.params.subscribe((params) => {
+    //   const ticker = params['ticker'];
+    //   this.loadStockDetails(ticker);
+    //   this.loadHistoricalData(ticker);
+    // });
+    // this.checkMarketStatus();
+    // this.setCurrentDate();
     this.activatedRoute.params.subscribe((params) => {
-      const ticker = params['ticker'];
-      this.loadStockDetails(ticker);
+      let ticker = params['ticker'];
+      // Before loading new data, check if we have cached data
+      const cachedData = this.appService.getLastSearchResult();
+      if (ticker === ':ticker'){
+        ticker = cachedData.ticker;
+      }
+      console.log(cachedData,ticker);
+      this.router.navigate(['/search', ticker]);
+      if(cachedData) {
+        // If the cached data matches the current ticker, use it instead of loading new data
+        this.stockProfile = cachedData.profile;
+        this.stockQuote = cachedData.quote;
+        this.companyPeers = cachedData.peers;
+        this.companyNews = cachedData.news;
+        this.insidersentiment = cachedData.sentiment;
+        // Note: Ensure these properties are correctly assigned based on your caching structure
+      } else {
+        // If no cached data matches, proceed to load new data
+        this.loadStockDetails(ticker);
+      }
       this.loadHistoricalData(ticker);
     });
     this.checkMarketStatus();
@@ -43,27 +70,63 @@ export class SearchComponent implements OnInit {
   }
 
   loadStockDetails(ticker: string) {
-    this.appService.fetchStockProfile(ticker).subscribe((profile) => {
+    forkJoin({
+      profile: this.appService.fetchStockProfile(ticker),
+      quote: this.appService.fetchStockQuote(ticker),
+      peers: this.appService.fetchCompanyPeers(ticker),
+      news: this.appService.fetchCompanyNews(ticker),
+      sentiment: this.appService.fetchInsiderSentiment(ticker),
+    }).subscribe(({ profile, quote, peers, news, sentiment }) => {
+      // Update component state with new data
       this.stockProfile = profile;
-    });
-
-    this.appService.fetchStockQuote(ticker).subscribe((quote) => {
       this.stockQuote = quote;
-      // this.checkMarketStatus();
-    });
-    this.appService.fetchCompanyPeers(ticker).subscribe((companypeers) => {
-      this.companyPeers = companypeers;
-    });
-    this.appService.fetchCompanyNews(ticker).subscribe((companynews) => {
-      this.companyNews = companynews;
-    });
-    this.appService
-      .fetchInsiderSentiment(ticker)
-      .subscribe((insidersentiment) => {
-        this.insidersentiment = insidersentiment;
-        // console.log('insidersentiment', this.insidersentiment);
+      this.companyPeers = peers;
+      this.companyNews = news;
+      this.insidersentiment = sentiment;
+  
+      // Cache the new data
+      this.appService.cacheLastSearchResult({
+        ticker: ticker,
+        profile: profile,
+        quote: quote,
+        peers: peers,
+        news: news,
+        sentiment: sentiment,
       });
+    });
   }
+  
+  // loadStockDetails(ticker: string) {
+  //   this.appService.fetchStockProfile(ticker).subscribe((profile) => {
+  //     this.stockProfile = profile;
+  //     const dataToCache = {
+  //       ticker: ticker,
+  //       profile: this.stockProfile,
+  //       quote: this.stockQuote,
+  //       peers: this.companyPeers,
+  //       news: this.companyNews,
+  //       sentiment: this.insidersentiment,
+  //     };
+  //     this.appService.cacheLastSearchResult(dataToCache);
+  //   });
+
+  //   this.appService.fetchStockQuote(ticker).subscribe((quote) => {
+  //     this.stockQuote = quote;
+  //     // this.checkMarketStatus();
+  //   });
+  //   this.appService.fetchCompanyPeers(ticker).subscribe((companypeers) => {
+  //     this.companyPeers = companypeers;
+  //   });
+  //   this.appService.fetchCompanyNews(ticker).subscribe((companynews) => {
+  //     this.companyNews = companynews;
+  //   });
+  //   this.appService
+  //     .fetchInsiderSentiment(ticker)
+  //     .subscribe((insidersentiment) => {
+  //       this.insidersentiment = insidersentiment;
+  //       // console.log('insidersentiment', this.insidersentiment);
+  //     });
+  // }
 
   // checkMarketStatus() {
   //   // Safety check to ensure stockQuote is defined

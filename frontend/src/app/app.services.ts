@@ -8,6 +8,7 @@ import { Observable, map } from 'rxjs';
 export class AppService {
   private backendUrl = 'http://localhost:3000';
   // private backendUrl = 'https://assignment3-backend.uw.r.appspot.com/';
+  private lastSearchResult: any = null;
 
   constructor(private http: HttpClient) {}
 
@@ -27,6 +28,8 @@ export class AppService {
       `${this.backendUrl}/api/stock/profile?symbol=${symbol}`
     );
   }
+
+  
 
   fetchStockQuote(symbol: string): Observable<any> {
     return this.http.get(`${this.backendUrl}/api/stock/quote?symbol=${symbol}`);
@@ -97,4 +100,20 @@ export class AppService {
       params: { ticker },
     });
   }
+
+  // Method to cache the search result
+  cacheLastSearchResult(result: any): void {
+    this.lastSearchResult = result;
+  }
+
+  // Method to get the cached result
+  getLastSearchResult(): any {
+    return this.lastSearchResult;
+  }
+
+  // In AppService, add a method to clear the cache
+  clearCache(): void {
+    this.lastSearchResult = null;
+  }
+
 }

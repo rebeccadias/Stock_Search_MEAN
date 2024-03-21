@@ -44,6 +44,9 @@ export class SearchBarComponent {
         // Reset myControl or its value here if needed
         Example: this.myControl.setValue('');
       });
+    
+    const cachedData = this.appService.getLastSearchResult();
+    console.log(cachedData?.ticker);
   }
 
   // Assume searchStocks returns Observable<any[]>, where each item has at least symbol and description properties
@@ -65,6 +68,7 @@ export class SearchBarComponent {
 
   performSearch() {
     let tickerValue = this.myControl.value;
+    this.appService.clearCache();
     // Check if the value is an object and has a symbol property
     if (
       typeof tickerValue === 'object' &&

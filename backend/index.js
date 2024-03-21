@@ -12,21 +12,21 @@ const polygon_API_KEY = "BKNanm3UkObHTvdgfAZNXgV7NrFu8aGr";
 app.use(cors());
 app.use(express.json());
 
-mongoose
-  .connect(
-    "mongodb+srv://admin:12345@rebecca.gwrn5bi.mongodb.net/?retryWrites=true&w=majority&appName=Rebecca",
-    {}
-  )
-  .then(() => console.log("Connected to MongoDB Atlas"))
-  .catch((err) => console.error("Could not connect to MongoDB Atlas", err));
-
 // mongoose
 //   .connect(
-//     "mongodb+srv://bhavenvi:12345@cluster0.dzwa3me.mongodb.net/?retryWrites=true&w=majority",
+//     "mongodb+srv://admin:12345@rebecca.gwrn5bi.mongodb.net/?retryWrites=true&w=majority&appName=Rebecca",
 //     {}
 //   )
 //   .then(() => console.log("Connected to MongoDB Atlas"))
 //   .catch((err) => console.error("Could not connect to MongoDB Atlas", err));
+
+mongoose
+  .connect(
+    "mongodb+srv://bhavenvi:12345@cluster0.dzwa3me.mongodb.net/?retryWrites=true&w=majority",
+    {}
+  )
+  .then(() => console.log("Connected to MongoDB Atlas"))
+  .catch((err) => console.error("Could not connect to MongoDB Atlas", err));
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
