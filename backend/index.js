@@ -12,21 +12,21 @@ const polygon_API_KEY = "BKNanm3UkObHTvdgfAZNXgV7NrFu8aGr";
 app.use(cors());
 app.use(express.json());
 
-// mongoose
-//   .connect(
-//     "mongodb+srv://admin:12345@rebecca.gwrn5bi.mongodb.net/?retryWrites=true&w=majority&appName=Rebecca",
-//     {}
-//   )
-//   .then(() => console.log("Connected to MongoDB Atlas"))
-//   .catch((err) => console.error("Could not connect to MongoDB Atlas", err));
-
 mongoose
   .connect(
-    "mongodb+srv://bhavenvi:12345@cluster0.dzwa3me.mongodb.net/?retryWrites=true&w=majority",
+    "mongodb+srv://admin:12345@rebecca.gwrn5bi.mongodb.net/?retryWrites=true&w=majority&appName=Rebecca",
     {}
   )
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("Could not connect to MongoDB Atlas", err));
+
+// mongoose
+//   .connect(
+//     "mongodb+srv://bhavenvi:12345@cluster0.dzwa3me.mongodb.net/?retryWrites=true&w=majority",
+//     {}
+//   )
+//   .then(() => console.log("Connected to MongoDB Atlas"))
+//   .catch((err) => console.error("Could not connect to MongoDB Atlas", err));
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
@@ -244,27 +244,6 @@ app.post("/api/user/init", async (req, res) => {
   }
 });
 
-// app.post("/api/user/buy", async (req, res) => {
-//   const { name, symbol, quantity, price, tickername } = req.body;
-
-//   try {
-//     const totalCost = quantity * price;
-//     const user = await User.findOne({ name });
-
-//     if (!user || user.balance < totalCost) {
-//       return res.status(400).send("Insufficient balance or user not found");
-//     }
-
-//     user.balance -= totalCost;
-//     user.stocks.push({ symbol, quantity, action: "BUY", price, tickername });
-//     await user.save();
-
-//     res.json({ message: "Stock purchased", user });
-//   } catch (error) {
-//     console.error("Error buying stock", error);
-//     res.status(500).send("Error buying stock");
-//   }
-// });
 
 app.post("/api/user/buy", async (req, res) => {
   const { name, symbol, quantity, price } = req.body;

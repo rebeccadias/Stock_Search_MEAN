@@ -35,13 +35,6 @@ export class SearchComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.activatedRoute.params.subscribe((params) => {
-    //   const ticker = params['ticker'];
-    //   this.loadStockDetails(ticker);
-    //   this.loadHistoricalData(ticker);
-    // });
-    // this.checkMarketStatus();
-    // this.setCurrentDate();
     this.activatedRoute.params.subscribe((params) => {
       let ticker = params['ticker'];
       // Before loading new data, check if we have cached data
@@ -96,89 +89,7 @@ export class SearchComponent implements OnInit {
     });
   }
   
-  // loadStockDetails(ticker: string) {
-  //   this.appService.fetchStockProfile(ticker).subscribe((profile) => {
-  //     this.stockProfile = profile;
-  //     const dataToCache = {
-  //       ticker: ticker,
-  //       profile: this.stockProfile,
-  //       quote: this.stockQuote,
-  //       peers: this.companyPeers,
-  //       news: this.companyNews,
-  //       sentiment: this.insidersentiment,
-  //     };
-  //     this.appService.cacheLastSearchResult(dataToCache);
-  //   });
-
-  //   this.appService.fetchStockQuote(ticker).subscribe((quote) => {
-  //     this.stockQuote = quote;
-  //     // this.checkMarketStatus();
-  //   });
-  //   this.appService.fetchCompanyPeers(ticker).subscribe((companypeers) => {
-  //     this.companyPeers = companypeers;
-  //   });
-  //   this.appService.fetchCompanyNews(ticker).subscribe((companynews) => {
-  //     this.companyNews = companynews;
-  //   });
-  //   this.appService
-  //     .fetchInsiderSentiment(ticker)
-  //     .subscribe((insidersentiment) => {
-  //       this.insidersentiment = insidersentiment;
-  //       // console.log('insidersentiment', this.insidersentiment);
-  //     });
-  // }
-
-  // checkMarketStatus() {
-  //   // Safety check to ensure stockQuote is defined
-  //   if (!this.stockQuote || !this.stockQuote.t) {
-  //     // Handle scenario where stockQuote or stockQuote.t is not yet available
-  //     console.log('stockQuote or stockQuote.t is undefined');
-  //     return;
-  //   }
-  //   console.log('stockQuote.t', this.stockQuote.t);
-
-  //   // Convert stockQuote.t to milliseconds to create a Date object
-  //   const lastUpdateTimestamp = this.stockQuote.t * 1000;
-
-  //   const lastUpdateDate = new Date(lastUpdateTimestamp);
-
-  //   // Extract hours and minutes from the last update timestamp
-  //   const lastUpdateHours = lastUpdateDate.getUTCHours();
-  //   const lastUpdateMinutes = lastUpdateDate.getUTCMinutes();
-
-  //   // Get current time in UTC
-  //   const currentDate = new Date();
-  //   console.log('currentDate', currentDate);
-  //   const currentHours = currentDate.getUTCHours();
-  //   const currentMinutes = currentDate.getUTCMinutes();
-
-  //   // Calculate the total minutes for easier comparison
-  //   const lastUpdateTotalMinutes = lastUpdateHours * 60 + lastUpdateMinutes;
-  //   const currentTotalMinutes = currentHours * 60 + currentMinutes;
-
-  //   // Calculate the absolute difference in minutes
-  //   const differenceInMinutes = Math.abs(
-  //     currentTotalMinutes - lastUpdateTotalMinutes
-  //   );
-
-  //   // Market is considered open if the difference is 5 minutes or less
-  //   this.isOpen = differenceInMinutes <= 5;
-
-  //   if (!this.isOpen) {
-  //     // Market is closed, format the last update timestamp for display
-  //     this.currentDate = lastUpdateDate
-  //       .toISOString()
-  //       .replace('T', ' ')
-  //       .slice(0, 19);
-  //     console.log(
-  //       `Market is closed as of ${this.currentDate}. Stock last updated at ${this.stockQuote.t}`
-  //     );
-  //   } else {
-  //     // Market is open, no need to display the date/time
-  //     console.log('Market is open.');
-  //   }
-  // }
-
+  
   checkMarketStatus() {
     const now = new Date();
     const utcHour = now.getUTCHours();
@@ -218,21 +129,7 @@ export class SearchComponent implements OnInit {
     return date.toISOString().replace('T', ' ').slice(0, 19);
   }
 
-  // loadHistoricalData(ticker: string) {
-  //   this.stockProfile.ticker = ticker; // Assuming this is where you store the fetched ticker symbol
-  //   const toDate = new Date();
-  //   const fromDate = new Date(toDate.getFullYear(), toDate.getMonth() - 6, toDate.getDate()); // 6 months ago
-
-  //   const to = toDate.toISOString().split('T')[0];
-  //   const from = fromDate.toISOString().split('T')[0];
-
-  //   this.appService.fetchHistoricalData(ticker, from, to).subscribe(data => {
-  //     this.setupChart(data, ticker);
-  //   }, error => {
-  //     console.error('Error fetching historical data:', error);
-  //   });
-  // }
-
+  
   loadHistoricalData(ticker: string) {
     // this.stockProfile.ticker = ticker;
     const toDate = new Date(); // This can be any day you choose
