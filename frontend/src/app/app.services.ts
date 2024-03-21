@@ -74,13 +74,15 @@ export class AppService {
     name: string,
     symbol: string,
     quantity: number,
-    price: number
+    price: number,
+    tickername: string,
   ): Observable<any> {
     return this.http.post(`${this.backendUrl}/api/user/buy`, {
       name,
       symbol,
       quantity,
       price,
+      tickername,
     });
   }
 
@@ -98,6 +100,12 @@ export class AppService {
   deleteStockFromWatchlist(ticker: string): Observable<any> {
     return this.http.delete(`${this.backendUrl}/api/watchlist/delete`, {
       params: { ticker },
+    });
+  }
+
+  fetchUserPortfolio(name: string): Observable<any> {
+    return this.http.get(`${this.backendUrl}/api/user/portfolio`, {
+      params: { name },
     });
   }
 

@@ -37,7 +37,9 @@ const userSchema = new mongoose.Schema({
       quantity: Number,
       action: String, // "BUY" or "SELL"
       price: Number,
+      totalCost: Number,
       date: { type: Date, default: Date.now },
+      tickername: String,
     },
   ],
 });
@@ -242,6 +244,28 @@ app.post("/api/user/init", async (req, res) => {
   }
 });
 
+// app.post("/api/user/buy", async (req, res) => {
+//   const { name, symbol, quantity, price, tickername } = req.body;
+
+//   try {
+//     const totalCost = quantity * price;
+//     const user = await User.findOne({ name });
+
+//     if (!user || user.balance < totalCost) {
+//       return res.status(400).send("Insufficient balance or user not found");
+//     }
+
+//     user.balance -= totalCost;
+//     user.stocks.push({ symbol, quantity, action: "BUY", price, tickername });
+//     await user.save();
+
+//     res.json({ message: "Stock purchased", user });
+//   } catch (error) {
+//     console.error("Error buying stock", error);
+//     res.status(500).send("Error buying stock");
+//   }
+// });
+
 app.post("/api/user/buy", async (req, res) => {
   const { name, symbol, quantity, price } = req.body;
 
@@ -253,16 +277,37 @@ app.post("/api/user/buy", async (req, res) => {
       return res.status(400).send("Insufficient balance or user not found");
     }
 
-    user.balance -= totalCost;
-    user.stocks.push({ symbol, quantity, action: "BUY", price });
-    await user.save();
+    // Check if the stock already exists in the user's portfolio
+    let stock = user.stocks.find(stock => stock.symbol === symbol);
 
+    if (stock) {
+      // Stock exists, update quantity and total cost
+      stock.quantity += quantity;
+      stock.totalCost += totalCost;
+      stock.price = stock.totalCost / stock.quantity; // Update average cost per share
+    } else {
+      // Stock does not exist, add a new entry to the portfolio
+      user.stocks.push({
+        symbol,
+        quantity,
+        action: "BUY",
+        price, // This represents the latest price, but total cost will represent the average
+        totalCost, // New field to keep track of total cost for average calculation
+        tickername: symbol, // Assuming tickername is the same as symbol
+      });
+    }
+
+    // Update user balance
+    user.balance -= totalCost;
+
+    await user.save();
     res.json({ message: "Stock purchased", user });
   } catch (error) {
     console.error("Error buying stock", error);
     res.status(500).send("Error buying stock");
   }
 });
+
 
 app.post("/api/user/sell", async (req, res) => {
   const { name, symbol, quantity, price } = req.body;
@@ -373,6 +418,21 @@ app.delete("/api/watchlist/delete", async (req, res) => {
     res.status(500).send("Error removing stock from watchlist");
   }
 });
+
+app.get("/api/user/portfolio", async (req, res) => {
+  const { name } = req.query;
+  try {
+    const user = await User.findOne({ name }).populate("stocks");
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    res.json(user.stocks);
+  } catch (error) {
+    console.error("Error retrieving portfolio", error);
+    res.status(500).send("Error retrieving portfolio");
+  }
+});
+
 
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
 

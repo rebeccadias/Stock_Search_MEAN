@@ -314,7 +314,8 @@ export class SearchComponent implements OnInit {
                 this.currentUser,
                 this.stockProfile.ticker,
                 result.quantity,
-                currentPrice
+                currentPrice,
+                this.stockProfile.name
               )
               .subscribe({
                 next: (buyResult) => {
