@@ -46,7 +46,7 @@ export class SearchBarComponent {
       });
     
     const cachedData = this.appService.getLastSearchResult();
-    console.log(cachedData?.ticker);
+   
   }
 
   // Assume searchStocks returns Observable<any[]>, where each item has at least symbol and description properties

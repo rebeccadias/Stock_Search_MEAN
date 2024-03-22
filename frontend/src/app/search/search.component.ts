@@ -52,7 +52,7 @@ export class SearchComponent implements OnInit {
       if (ticker === ':ticker') {
         ticker = cachedData.ticker;
       }
-      console.log(cachedData, ticker);
+
       this.router.navigate(['/search', ticker]);
       if (cachedData) {
         // If the cached data matches the current ticker, use it instead of loading new data
@@ -66,6 +66,7 @@ export class SearchComponent implements OnInit {
         // If no cached data matches, proceed to load new data
         this.loadStockDetails(ticker);
       }
+      // this.loadHistoricalData(ticker, this.stockQuote.d);
       this.loadHistoricalData(ticker);
       this.loadHistoricalData2years(ticker);
     });
@@ -139,21 +140,43 @@ export class SearchComponent implements OnInit {
     return date.toISOString().replace('T', ' ').slice(0, 19);
   }
 
+  // loadHistoricalData(ticker: string,d: number) {
+  //   // this.stockProfile.ticker = ticker;
+  //   const toDate = new Date(); // This can be any day you choose
+  //   toDate.setHours(23, 59, 59, 999); // Set to the end of the day
+
+  //   const fromDate = new Date(toDate);
+  //   fromDate.setHours(0, 0, 0, 0); // Set to the start of the same day
+
+  //   const to = toDate.toISOString().split('T')[0];
+  //   const from = fromDate.toISOString().split('T')[0];
+
+  //   this.appService.fetchHistoricalData(ticker, from, to).subscribe(
+  //     (data) => {
+  //       // console.error(' fetching historical data:', data);
+  //       this.setupChart(data, ticker,d);
+  //     },
+  //     (error) => {
+  //       console.error('Error fetching historical data:', error);
+  //     }
+  //   );
+  // }
+
   loadHistoricalData(ticker: string) {
-    // this.stockProfile.ticker = ticker;
-    const toDate = new Date(); // This can be any day you choose
-    toDate.setHours(23, 59, 59, 999); // Set to the end of the day
+    ticker = ticker.toUpperCase();
+    const toDate = new Date(); // This will be the end of today
+    const to = toDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
 
-    const fromDate = new Date(toDate);
-    fromDate.setHours(0, 0, 0, 0); // Set to the start of the same day
+    const fromDate = new Date(toDate.getTime() - 24 * 60 * 60 * 1000); // Set to the start of one day before today
+    fromDate.setHours(0, 0, 0, 0);
 
-    const to = toDate.toISOString().split('T')[0];
     const from = fromDate.toISOString().split('T')[0];
 
     this.appService.fetchHistoricalData(ticker, from, to).subscribe(
       (data) => {
-        // console.error(' fetching historical data:', data);
-        this.setupChart(data, ticker);
+        const d = this.stockQuote.d;
+
+        this.setupChart(data, ticker, d);
       },
       (error) => {
         console.error('Error fetching historical data:', error);
@@ -162,9 +185,10 @@ export class SearchComponent implements OnInit {
   }
 
   loadHistoricalData2years(ticker: string) {
+    ticker = ticker.toUpperCase();
     // Calculate 'to' as today's date
-    const toDate = new Date(); // This will give you today's date
-    const to = toDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+    const toDate = new Date();
+    const to = toDate.toISOString().split('T')[0];
 
     // Calculate 'from' as the date 2 years before today
     const fromDate = new Date(toDate);
@@ -181,9 +205,9 @@ export class SearchComponent implements OnInit {
     );
   }
 
-  setupChart(data: any, ticker: string) {
-    const lineColor = this.stockQuote.d < 0 ? 'red' : 'green';
-    // console.log(data);
+  setupChart(data: any, ticker: string, d: number) {
+    const lineColor = d < 0 ? 'red' : 'green';
+
     this.chartOptions = {
       series: [
         {
@@ -196,7 +220,7 @@ export class SearchComponent implements OnInit {
         },
       ],
       title: {
-        text: `${this.stockProfile.ticker} Hourly Price Variation`, // Dynamic title
+        text: `${ticker} Hourly Price Variation`, // Dynamic title
       },
       xAxis: {
         type: 'datetime',
@@ -295,10 +319,8 @@ export class SearchComponent implements OnInit {
   setupSMA_VolChart(data: any, ticker: string) {
     const ohlc = [];
     const volume = [];
-    const dataLength = data.length;
 
-    // Assuming 'data' is the array of historical data from the API
-    for (let i = 0; i < dataLength; i++) {
+    for (let i = 0; i < data.length; i++) {
       const point = data[i];
       ohlc.push([
         point.t, // timestamp in milliseconds
