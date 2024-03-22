@@ -11,7 +11,10 @@
     <div class="col-3 box1 d-flex flex-column justify-content-center">
       <div class="row mb-2 justify-content-center big-font">
         <span>{{ stockProfile.ticker }}</span>
-        <i class="far fa-star small-icon" (click)="toggleFavorite(stockProfile,stockQuote)"></i>
+        <i
+          class="far fa-star small-icon"
+          (click)="toggleFavorite(stockProfile, stockQuote)"
+        ></i>
 
         <!-- <i class="far fa-star small-icon"></i> -->
         <!-- This is the empty star icon -->
@@ -23,7 +26,13 @@
       <div class="row justify-content-center">
         <!-- <button type="button" class="btn btn-success mr-1">Buy</button>
          -->
-        <button type="button" class="btn btn-success mr-1" (click)="openBuyDialog(stockQuote.c)">Buy</button>
+        <button
+          type="button"
+          class="btn btn-success mr-1"
+          (click)="openBuyDialog(stockQuote.c)"
+        >
+          Buy
+        </button>
         <button type="button" class="btn btn-danger">Sell</button>
       </div>
     </div>
@@ -189,7 +198,17 @@
         </div>
       </div>
     </mat-tab>
-    <mat-tab label="Charts"> Content 3 </mat-tab>
+    <mat-tab label="Charts">
+      <div *ngIf="Highcharts">
+        <highcharts-chart
+          [Highcharts]="Highcharts"
+          [options]="SMA_VolchartOptions"
+          style="width: 100%; height: 400px; display: block"
+        >
+        </highcharts-chart>
+      </div>
+    </mat-tab>
+
     <mat-tab label="Insights">
       <div class="container">
         <div class="row justify-content-center align-items-center">

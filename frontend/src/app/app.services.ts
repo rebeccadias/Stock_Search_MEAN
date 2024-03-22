@@ -62,6 +62,16 @@ export class AppService {
     });
   }
 
+  fetchHistoricalData2years(
+    symbol: string,
+    from: string,
+    to: string
+  ): Observable<any> {
+    return this.http.get(`${this.backendUrl}/api/stock/historical2years`, {
+      params: { symbol, from, to },
+    });
+  }
+
   // In app.service.ts
 
   getUserBalance(name: string): Observable<any> {

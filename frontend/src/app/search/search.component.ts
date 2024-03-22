@@ -3,10 +3,17 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AppService } from '../app.services';
 import { forkJoin } from 'rxjs';
-import * as Highcharts from 'highcharts';
+import * as Highcharts from 'highcharts/highstock';
 import { MatDialog } from '@angular/material/dialog';
 import { BuyDialogComponent } from '../buy-dialog/buy-dialog.component';
 import { Router, NavigationEnd } from '@angular/router';
+import { Input } from '@angular/core';
+
+import vbp from 'highcharts/indicators/volume-by-price';
+import indicators from 'highcharts/indicators/indicators';
+
+indicators(Highcharts);
+vbp(Highcharts);
 
 import { NewsModalComponent } from '../news-modal/news-modal.component';
 @Component({
@@ -22,16 +29,19 @@ export class SearchComponent implements OnInit {
   insidersentiment: any;
   isOpen: boolean = false;
   currentDate: string = '';
+
   Highcharts: typeof Highcharts = Highcharts;
 
   chartOptions!: Highcharts.Options;
+  SMA_VolchartOptions!: Highcharts.Options;
+
   selectedNewsItem: any;
 
   constructor(
     public dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
     private appService: AppService,
-    private router: Router,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -39,12 +49,12 @@ export class SearchComponent implements OnInit {
       let ticker = params['ticker'];
       // Before loading new data, check if we have cached data
       const cachedData = this.appService.getLastSearchResult();
-      if (ticker === ':ticker'){
+      if (ticker === ':ticker') {
         ticker = cachedData.ticker;
       }
-      console.log(cachedData,ticker);
+      console.log(cachedData, ticker);
       this.router.navigate(['/search', ticker]);
-      if(cachedData) {
+      if (cachedData) {
         // If the cached data matches the current ticker, use it instead of loading new data
         this.stockProfile = cachedData.profile;
         this.stockQuote = cachedData.quote;
@@ -57,6 +67,7 @@ export class SearchComponent implements OnInit {
         this.loadStockDetails(ticker);
       }
       this.loadHistoricalData(ticker);
+      this.loadHistoricalData2years(ticker);
     });
     this.checkMarketStatus();
     this.setCurrentDate();
@@ -76,7 +87,7 @@ export class SearchComponent implements OnInit {
       this.companyPeers = peers;
       this.companyNews = news;
       this.insidersentiment = sentiment;
-  
+
       // Cache the new data
       this.appService.cacheLastSearchResult({
         ticker: ticker,
@@ -88,8 +99,7 @@ export class SearchComponent implements OnInit {
       });
     });
   }
-  
-  
+
   checkMarketStatus() {
     const now = new Date();
     const utcHour = now.getUTCHours();
@@ -129,7 +139,6 @@ export class SearchComponent implements OnInit {
     return date.toISOString().replace('T', ' ').slice(0, 19);
   }
 
-  
   loadHistoricalData(ticker: string) {
     // this.stockProfile.ticker = ticker;
     const toDate = new Date(); // This can be any day you choose
@@ -148,6 +157,26 @@ export class SearchComponent implements OnInit {
       },
       (error) => {
         console.error('Error fetching historical data:', error);
+      }
+    );
+  }
+
+  loadHistoricalData2years(ticker: string) {
+    // Calculate 'to' as today's date
+    const toDate = new Date(); // This will give you today's date
+    const to = toDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+
+    // Calculate 'from' as the date 2 years before today
+    const fromDate = new Date(toDate);
+    fromDate.setFullYear(fromDate.getFullYear() - 2); // Subtract 2 years
+    const from = fromDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+
+    this.appService.fetchHistoricalData2years(ticker, from, to).subscribe(
+      (data) => {
+        this.setupSMA_VolChart(data.results, ticker); // Setup SMA Chart
+      },
+      (error) => {
+        console.error('Error fetching historical 2 year data:', error);
       }
     );
   }
@@ -261,5 +290,82 @@ export class SearchComponent implements OnInit {
         news: news,
       },
     });
+  }
+
+  setupSMA_VolChart(data: any, ticker: string) {
+    const ohlc = [];
+    const volume = [];
+    const dataLength = data.length;
+
+    // Assuming 'data' is the array of historical data from the API
+    for (let i = 0; i < dataLength; i++) {
+      const point = data[i];
+      ohlc.push([
+        point.t, // timestamp in milliseconds
+        point.o, // open
+        point.h, // high
+        point.l, // low
+        point.c, // close
+      ]);
+
+      volume.push([
+        point.t, // timestamp in milliseconds
+        point.v, // volume
+      ]);
+    }
+
+    this.SMA_VolchartOptions = {
+      rangeSelector: { selected: 2 },
+      title: { text: 'With SMA and Volume by Price technical indicators' },
+      yAxis: [
+        {
+          labels: { align: 'right', x: -3 },
+          title: { text: 'OHLC' },
+          height: '60%',
+          lineWidth: 2,
+          resize: { enabled: true },
+          startOnTick: false,
+          endOnTick: false,
+        },
+        {
+          labels: { align: 'right', x: -3 },
+          title: { text: 'Volume' },
+          top: '65%',
+          height: '35%',
+          offset: 0,
+          lineWidth: 2,
+        },
+      ],
+      tooltip: { split: true },
+      series: [
+        {
+          type: 'candlestick',
+          name: ticker,
+          id: ticker.toLowerCase(),
+          zIndex: 2,
+          data: ohlc,
+        },
+        {
+          type: 'column',
+          name: 'Volume',
+          id: 'volume',
+          data: volume,
+          yAxis: 1,
+        },
+        {
+          type: 'vbp',
+          linkedTo: ticker.toLowerCase(),
+          params: { volumeSeriesID: 'volume' },
+          dataLabels: { enabled: false },
+          zoneLines: { enabled: false },
+        },
+        {
+          type: 'sma',
+          linkedTo: ticker.toLowerCase(),
+          zIndex: 1,
+          marker: { enabled: false },
+        },
+      ],
+    };
   }
 }

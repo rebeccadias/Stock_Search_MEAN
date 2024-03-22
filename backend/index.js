@@ -224,6 +224,21 @@ app.get("/api/stock/historical", async (req, res) => {
   }
 });
 
+app.get("/api/stock/historical2years", async (req, res) => {
+  const { symbol, from, to } = req.query;
+
+  const url = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/1/day/${from}/${to}?adjusted=true&sort=asc&apiKey=${polygon_API_KEY}`;
+
+  try {
+    const response = await axios.get(url);
+
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching historical stock data", error);
+    res.status(500).send("Error fetching historical stock data");
+  }
+});
+
 app.post("/api/user/init", async (req, res) => {
   const { name } = req.body;
 
@@ -244,7 +259,6 @@ app.post("/api/user/init", async (req, res) => {
   }
 });
 
-
 app.post("/api/user/buy", async (req, res) => {
   const { name, symbol, quantity, price } = req.body;
 
@@ -257,7 +271,7 @@ app.post("/api/user/buy", async (req, res) => {
     }
 
     // Check if the stock already exists in the user's portfolio
-    let stock = user.stocks.find(stock => stock.symbol === symbol);
+    let stock = user.stocks.find((stock) => stock.symbol === symbol);
 
     if (stock) {
       // Stock exists, update quantity and total cost
@@ -286,7 +300,6 @@ app.post("/api/user/buy", async (req, res) => {
     res.status(500).send("Error buying stock");
   }
 });
-
 
 app.post("/api/user/sell", async (req, res) => {
   const { name, symbol, quantity, price } = req.body;
@@ -411,7 +424,6 @@ app.get("/api/user/portfolio", async (req, res) => {
     res.status(500).send("Error retrieving portfolio");
   }
 });
-
 
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
 
