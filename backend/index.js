@@ -207,12 +207,10 @@ app.get("/api/stock/insidersentiment", async (req, res) => {
 app.get("/api/stock/historical", async (req, res) => {
   const { symbol, from, to } = req.query;
 
-  // console.log("from date", from);
-  // console.log("to date", to);
-  // const url = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/1/hour/${from}/${to}?adjusted=true&sort=asc&apiKey=${polygon_API_KEY}`;
+  const url = `https://api.polygon.io/v2/aggs/ticker/${symbol}/range/1/hour/${from}/${to}?adjusted=true&sort=asc&apiKey=BKNanm3UkObHTvdgfAZNXgV7NrFu8aGr`;
 
-  const url =
-    "https://api.polygon.io/v2/aggs/ticker/TSLA/range/1/hour/2024-03-14/2024-03-15?adjusted=true&sort=asc&apiKey=BKNanm3UkObHTvdgfAZNXgV7NrFu8aGr";
+  // const url =
+  //   "https://api.polygon.io/v2/aggs/ticker/TSLA/range/1/hour/2024-03-14/2024-03-15?adjusted=true&sort=asc&apiKey=BKNanm3UkObHTvdgfAZNXgV7NrFu8aGr";
 
   try {
     const response = await axios.get(url);
@@ -231,7 +229,7 @@ app.get("/api/stock/historical2years", async (req, res) => {
 
   try {
     const response = await axios.get(url);
-
+    console.log("response", response.data);
     res.json(response.data);
   } catch (error) {
     console.error("Error fetching historical stock data", error);
