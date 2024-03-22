@@ -259,7 +259,16 @@
           </div>
           <!-- This column will do the same as the previous one -->
           <div class="col-sm-12 col-md-6">
-            <div class="p-3 border bg-light">Row 2: Element 2</div>
+            <div class="p-3 border bg-light">
+              <div *ngIf="Highcharts">
+                <highcharts-chart
+                  [Highcharts]="Highcharts"
+                  [options]="companyEarningsChartOptions"
+                  style="width: 100%; height: 400px; display: block"
+                >
+                </highcharts-chart>
+              </div>
+            </div>
           </div>
         </div>
       </div>

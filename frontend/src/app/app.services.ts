@@ -134,4 +134,10 @@ export class AppService {
     this.lastSearchResult = null;
   }
 
+  fetchCompanyEarningsData(symbol: string): Observable<any> {
+    return this.http.get(
+      `${this.backendUrl}/api/stock/companyearnings`,{params: { symbol }}
+    );
+  }
+
 }

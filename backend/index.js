@@ -423,6 +423,34 @@ app.get("/api/user/portfolio", async (req, res) => {
   }
 });
 
+// /api/stock/companyearnings
+
+app.get("/api/stock/companyearnings", async (req, res) => {
+  const { symbol } = req.query;
+  try {
+    const response = await axios.get(
+      `https://finnhub.io/api/v1/stock/earnings?symbol=${symbol}&token=${FINNHUB_API_KEY}`
+    );
+    const processedData = response.data.map((item) => {
+      return {
+        actual: item.actual !== null ? item.actual : 0,
+        estimate: item.estimate !== null ? item.estimate : 0,
+        period: item.period, // Assuming period is always provided
+        quarter: item.quarter !== null ? item.quarter : 0,
+        surprise: item.surprise !== null ? item.surprise : 0,
+        surprisePercent:
+          item.surprisePercent !== null ? item.surprisePercent : 0,
+        symbol: item.symbol, // Assuming symbol is always provided
+        year: item.year !== null ? item.year : 0,
+      };
+    });
+
+    res.json(processedData);
+  } catch (error) {
+    res.status(500).send("Error fetching stock company peers");
+  }
+});
+
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
 
 // Path: backend/models/Post.js

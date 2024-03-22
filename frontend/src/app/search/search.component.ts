@@ -29,7 +29,7 @@ export class SearchComponent implements OnInit {
   insidersentiment: any;
   isOpen: boolean = false;
   currentDate: string = '';
-
+  companyEarningsChartOptions!: Highcharts.Options;
   Highcharts: typeof Highcharts = Highcharts;
 
   chartOptions!: Highcharts.Options;
@@ -69,6 +69,7 @@ export class SearchComponent implements OnInit {
       // this.loadHistoricalData(ticker, this.stockQuote.d);
       this.loadHistoricalData(ticker);
       this.loadHistoricalData2years(ticker);
+      this.loadCompanyEarningsData(ticker);
     });
     this.checkMarketStatus();
     this.setCurrentDate();
@@ -198,6 +199,18 @@ export class SearchComponent implements OnInit {
     this.appService.fetchHistoricalData2years(ticker, from, to).subscribe(
       (data) => {
         this.setupSMA_VolChart(data.results, ticker); // Setup SMA Chart
+      },
+      (error) => {
+        console.error('Error fetching historical 2 year data:', error);
+      }
+    );
+  }
+
+  loadCompanyEarningsData(ticker: string) {
+    ticker = ticker.toUpperCase();
+    this.appService.fetchCompanyEarningsData(ticker).subscribe(
+      (data) => {
+        this.setupEarningsChart(data); // Setup Earning Chart
       },
       (error) => {
         console.error('Error fetching historical 2 year data:', error);
@@ -388,6 +401,125 @@ export class SearchComponent implements OnInit {
           marker: { enabled: false },
         },
       ],
+    };
+  }
+  setupEarningsChart(data: any) {
+    // function for drawing line on the graph after the chart has been rendered
+
+    // code for getting X Axis Labels
+    const XAxisLAbels = [];
+
+    // for (let i = 0; i < data.length; i++) {
+    //   const point = data[i];
+    //   XAxisLAbels.push(
+    //     `point.period! `Surprise: ${point.surprise}``, // open
+    //   );
+
+    // }
+    const XAxisLabels = data.map(
+      (point: any) => `${point.period}!Surprise: ${point.surprise}`
+    );
+    // console.log(XAxisLabels);
+
+    //getting min value for estimate and actual
+
+    const estimate = [];
+    const actual = [];
+
+    for (let i = 0; i < data.length; i++) {
+      estimate.push(data[i].estimate);
+      actual.push(data[i].actual);
+    }
+    const EstimateMin = estimate.reduce(
+      (min, e) => Math.min(min, e),
+      Number.POSITIVE_INFINITY
+    );
+    const ActualMin = actual.reduce(
+      (min, a) => Math.min(min, a),
+      Number.POSITIVE_INFINITY
+    );
+    const minEvsA = Math.min(EstimateMin, ActualMin);
+
+    this.companyEarningsChartOptions = {
+      series: [
+        {
+          name: 'Actual',
+          type: 'spline',
+          data: data.reduce((acc: any, curr: any) => {
+            acc.push(curr.actual);
+            return acc;
+          }, []),
+          color: '#30b8fd',
+        },
+        {
+          name: 'Estimate',
+          type: 'spline',
+          data: data.reduce((acc: any, curr: any) => {
+            acc.push(curr.estimate);
+            return acc;
+          }, []),
+          color: '#625ac8',
+        },
+      ],
+      title: {
+        text: 'Historical EPS Surprises',
+      },
+      chart: {
+        type: 'spline',
+        backgroundColor: '#f8f8f8',
+        style: {
+          fontSize: 'small',
+        },
+        // events: {
+        //   load: function () {
+        //     drawCustomLine(this);
+        //   },
+        // },
+      },
+      xAxis: {
+        categories: XAxisLabels,
+        labels: {
+          formatter: function (this: any) {
+            const splitvalues = this.value.split('!');
+            const date = splitvalues[0];
+            const surprise = splitvalues[1];
+            return `<div>${date}</div><br><div>${surprise}</div>`;
+          },
+        },
+      },
+      yAxis: {
+        title: {
+          text: 'Quarterly EPS',
+        },
+        min: minEvsA,
+        crosshair: false,
+      },
+      tooltip: {
+        shared: true,
+
+        formatter: function (this: any) {
+          // console.log('this', this);
+          return this.points.reduce(function (s: any, point: any) {
+            console.log('point', point);
+            console.log('s', s);
+            return (
+              s +
+              '<br/><span style="color:' +
+              point.series.color +
+              ';">\u25CF </span>' +
+              point.series.name +
+              ': <b>' +
+              point.y +
+              '</b>'
+            );
+          }, '<p style="font-size: x-small">' +
+            this.x[0] +
+            '<br/>' +
+            this.x[1] +
+            '</P>');
+        },
+        valueDecimals: 2,
+      },
     };
   }
 }
