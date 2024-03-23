@@ -34,6 +34,7 @@ export class SearchComponent implements OnInit {
 
   chartOptions!: Highcharts.Options;
   SMA_VolchartOptions!: Highcharts.Options;
+  recChartOptions!: Highcharts.Options;
 
   selectedNewsItem: any;
 
@@ -70,6 +71,7 @@ export class SearchComponent implements OnInit {
       this.loadHistoricalData(ticker);
       this.loadHistoricalData2years(ticker);
       this.loadCompanyEarningsData(ticker);
+      this.loadCompanyRecData(ticker);
     });
     this.checkMarketStatus();
     this.setCurrentDate();
@@ -211,6 +213,19 @@ export class SearchComponent implements OnInit {
     this.appService.fetchCompanyEarningsData(ticker).subscribe(
       (data) => {
         this.setupEarningsChart(data); // Setup Earning Chart
+      },
+      (error) => {
+        console.error('Error fetching historical 2 year data:', error);
+      }
+    );
+  }
+
+  loadCompanyRecData(ticker: string) {
+    ticker = ticker.toUpperCase();
+    this.appService.fetchCompanyRecData(ticker).subscribe(
+      (data) => {
+        console.log('data', data);
+        this.setupRecChart(data);
       },
       (error) => {
         console.error('Error fetching historical 2 year data:', error);
@@ -519,6 +534,95 @@ export class SearchComponent implements OnInit {
             '</P>');
         },
         valueDecimals: 2,
+      },
+    };
+  }
+
+  setupRecChart(data: any) {
+    const dataArray = Array.isArray(data) ? data : Object.values(data);
+    console.log('dataArray', dataArray);
+    const sb = [];
+    const ss = [];
+    const sell = [];
+    const hold = [];
+    const buy = [];
+    const period = [];
+
+    for (let i = 0; i < dataArray.length; i++) {
+      sb.push(data[i].strongBuy);
+      ss.push(data[i].strongSell);
+      sell.push(data[i].sell);
+      hold.push(data[i].hold);
+      buy.push(data[i].buy);
+      period.push(data[i].period.slice(0, -3));
+    }
+
+    this.recChartOptions = {
+      chart: {
+        type: 'column', // Specifies the chart type
+        backgroundColor: '#f8f8f8',
+        style: {
+          fontSize: 'small',
+        },
+      },
+      title: {
+        text: '<span class="h6 fw-medium">Recommendation Trends<span>',
+        useHTML: true,
+      },
+      xAxis: {
+        categories: period,
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: '#Analysis',
+        },
+      },
+      series: [
+        {
+          type: 'column',
+          name: 'Strong Buy',
+          data: sb,
+          color: '#196334',
+        },
+        {
+          type: 'column',
+          name: 'Buy',
+          data: buy,
+          color: '#25af51',
+        },
+        {
+          type: 'column',
+          name: 'Hold',
+          data: hold,
+          color: '#ae7e29',
+        },
+        {
+          type: 'column',
+          name: 'Sell',
+          data: sell,
+          color: '#f15053',
+        },
+        {
+          type: 'column',
+          name: 'Strong Sell',
+          data: ss,
+          color: '#752b2c',
+        },
+      ],
+      legend: {
+        verticalAlign: 'bottom',
+      },
+      plotOptions: {
+        column: {
+          stacking: 'normal',
+          dataLabels: {
+            enabled: true,
+          },
+        },
+      },
+      exporting: {
+        enabled: false,
       },
     };
   }

@@ -229,7 +229,7 @@ app.get("/api/stock/historical2years", async (req, res) => {
 
   try {
     const response = await axios.get(url);
-    console.log("response", response.data);
+
     res.json(response.data);
   } catch (error) {
     console.error("Error fetching historical stock data", error);
@@ -446,6 +446,21 @@ app.get("/api/stock/companyearnings", async (req, res) => {
     });
 
     res.json(processedData);
+  } catch (error) {
+    res.status(500).send("Error fetching stock company peers");
+  }
+});
+
+// /api/stock/companyrec
+
+app.get("/api/stock/companyrec", async (req, res) => {
+  const { symbol } = req.query;
+  try {
+    const response = await axios.get(
+      `https://finnhub.io/api/v1/stock/recommendation?symbol=${symbol}&token=${FINNHUB_API_KEY}`
+    );
+
+    res.json(response.data);
   } catch (error) {
     res.status(500).send("Error fetching stock company peers");
   }

@@ -29,8 +29,6 @@ export class AppService {
     );
   }
 
-  
-
   fetchStockQuote(symbol: string): Observable<any> {
     return this.http.get(`${this.backendUrl}/api/stock/quote?symbol=${symbol}`);
   }
@@ -85,7 +83,7 @@ export class AppService {
     symbol: string,
     quantity: number,
     price: number,
-    tickername: string,
+    tickername: string
   ): Observable<any> {
     return this.http.post(`${this.backendUrl}/api/user/buy`, {
       name,
@@ -135,9 +133,14 @@ export class AppService {
   }
 
   fetchCompanyEarningsData(symbol: string): Observable<any> {
-    return this.http.get(
-      `${this.backendUrl}/api/stock/companyearnings`,{params: { symbol }}
-    );
+    return this.http.get(`${this.backendUrl}/api/stock/companyearnings`, {
+      params: { symbol },
+    });
   }
 
+  fetchCompanyRecData(symbol: string): Observable<any> {
+    return this.http.get(`${this.backendUrl}/api/stock/companyrec`, {
+      params: { symbol },
+    });
+  }
 }
