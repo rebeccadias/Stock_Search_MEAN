@@ -220,11 +220,16 @@
         <!-- First Row with a single element -->
         <div class="row">
           <div class="col-12">
-            <div class="p-3 border bg-light">
-              <table class="table" *ngIf="insidersentiment && stockProfile">
+            <div class="p-3 border bg-light table-insigh">
+              <table
+                class="table table-insigh-custom"
+                *ngIf="insidersentiment && stockProfile"
+              >
                 <thead>
                   <tr>
-                    <th scope="col">{{ stockProfile.name }}</th>
+                    <th scope="col">
+                      {{ stockProfile.name }}
+                    </th>
                     <th scope="col">MSPR</th>
                     <th scope="col">Change</th>
                   </tr>
@@ -232,18 +237,24 @@
                 <tbody>
                   <tr>
                     <td>Total</td>
-                    <td>{{ insidersentiment.total }}</td>
-                    <td>{{ insidersentiment.changeTotal }}</td>
+                    <td class="font-small">{{ insidersentiment.total }}</td>
+                    <td class="font-small">
+                      {{ insidersentiment.changeTotal }}
+                    </td>
                   </tr>
                   <tr>
                     <td>Positive</td>
-                    <td>{{ insidersentiment.positive }}</td>
-                    <td>{{ insidersentiment.positiveChange }}</td>
+                    <td class="font-small">{{ insidersentiment.positive }}</td>
+                    <td class="font-small">
+                      {{ insidersentiment.positiveChange }}
+                    </td>
                   </tr>
                   <tr>
                     <td>Negative</td>
-                    <td>{{ insidersentiment.negative }}</td>
-                    <td>{{ insidersentiment.negativeChange }}</td>
+                    <td class="font-small">{{ insidersentiment.negative }}</td>
+                    <td class="font-small">
+                      {{ insidersentiment.negativeChange }}
+                    </td>
                   </tr>
                 </tbody>
               </table>

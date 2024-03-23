@@ -514,24 +514,23 @@ export class SearchComponent implements OnInit {
 
         formatter: function (this: any) {
           // console.log('this', this);
-          return this.points.reduce(function (s: any, point: any) {
-            console.log('point', point);
-            console.log('s', s);
+          const splitvalues = this.x.split('!');
+          const date = splitvalues[0];
+          const surprise = splitvalues[1];
+          // chatgpt prompt : how to add a custom tooltip to a highchart graph , how to add a dot in the graph hover tooltip
+          const initialHTML = `<div style="font-size: x-small">${date}</div><br><div style="font-size: x-small">${surprise}</div>`;
+          return this.points.reduce(function (modifiedHtml: any, point: any) {
             return (
-              s +
-              '<br/><span style="color:' +
+              modifiedHtml +
+              '<br/><div style="color:' +
               point.series.color +
-              ';">\u25CF </span>' +
+              ';">\u25CF </div>' +
               point.series.name +
               ': <b>' +
               point.y +
               '</b>'
             );
-          }, '<p style="font-size: x-small">' +
-            this.x[0] +
-            '<br/>' +
-            this.x[1] +
-            '</P>');
+          }, initialHTML);
         },
         valueDecimals: 2,
       },
@@ -566,7 +565,7 @@ export class SearchComponent implements OnInit {
         },
       },
       title: {
-        text: '<span class="h6 fw-medium">Recommendation Trends<span>',
+        text: '<span class="h6 fw-medium" style="font-weight: bold;">Recommendation Trends<span>',
         useHTML: true,
       },
       xAxis: {
