@@ -1,16 +1,71 @@
-<h1 mat-dialog-title>{{ data.news.headline }}</h1>
+<div class="dialog-header">
+  <div class="titlensubtit">
+    <h2 mat-dialog-title>{{ data.news.source }}</h2>
+    <h5 class="dialog-subtitle">{{ data.formattedDate }}</h5>
+  </div>
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button mat-dialog-close>
+      <fa-icon [icon]="['fas', 'times']" class="close-icon"></fa-icon>
+    </button>
+  </mat-dialog-actions>
+</div>
+<hr />
 <mat-dialog-content>
-  <p><strong>Source:</strong> {{ data.news.source }}</p>
+  <h2 style="color: black">{{ data.news.headline }}</h2>
+  <h4 style="color: black">{{ data.news.summary }}</h4>
   <p>
-    <strong>Published Date:</strong> {{ data.news.datetime | date : "medium" }}
+    For more details click
+    <a href="{{ data.news.url }}" target="_blank">here</a>
   </p>
-  <p><strong>Title:</strong> {{ data.news.headline }}</p>
-  <p><strong>Description:</strong> {{ data.news.summary }}</p>
-  <p>
-    <strong>URL:</strong>
-    <a href="{{ data.news.url }}" target="_blank">{{ data.news.url }}</a>
-  </p>
+  <div class="share">
+    <p>Share</p>
+    <span class="social-icons">
+      <a
+        class="twitter-share-button"
+        href="https://twitter.com/intent/tweet?text={{
+          data.news.headline
+        }}&url={{ data.news.url }}"
+        target="_blank"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 512 512"
+          style="width: 10%; height: 10%"
+        >
+          <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+          <path
+            d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"
+          />
+        </svg>
+      </a>
+
+      <span
+        class="fb-share-button"
+        data-href="https://developers.facebook.com/docs/plugins/"
+        data-layout="button"
+        data-size=""
+        style="padding-left: 2%"
+      >
+        <a
+          target="_blank"
+          href="https://www.facebook.com/sharer/sharer.php?u={{
+            data.news.url
+          }}"
+          class="fb-xfbml-parse-ignore"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 448 512"
+            style="width: 10%; height: 10%"
+          >
+            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+            <path
+              fill="#3000c2"
+              d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64h98.2V334.2H109.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H255V480H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"
+            />
+          </svg>
+        </a>
+      </span>
+    </span>
+  </div>
 </mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button mat-dialog-close>Close</button>
-</mat-dialog-actions>

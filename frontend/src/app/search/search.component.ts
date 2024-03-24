@@ -334,12 +334,21 @@ export class SearchComponent implements OnInit {
   }
 
   openNewsModal(news: any) {
-    console.log('news', news);
+    const formattedDate = new Date(news.datetime * 1000).toLocaleDateString(
+      'en-US',
+      {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }
+    );
+    console.log('formattedDate', formattedDate);
     this.dialog.open(NewsModalComponent, {
       width: '450px',
       position: { top: '10px' },
       data: {
         news: news,
+        formattedDate: formattedDate,
       },
     });
   }

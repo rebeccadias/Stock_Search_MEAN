@@ -3,6 +3,7 @@ import {
   BrowserModule,
   provideClientHydration,
 } from '@angular/platform-browser';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -52,6 +53,7 @@ import { NewsModalComponent } from './news-modal/news-modal.component';
     MatDialogModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    FontAwesomeModule,
   ],
   providers: [provideClientHydration(), provideAnimationsAsync(), AppService],
   bootstrap: [AppComponent],
