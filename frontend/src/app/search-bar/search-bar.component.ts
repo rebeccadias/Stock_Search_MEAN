@@ -22,6 +22,7 @@ export class SearchBarComponent {
   options: string[] = [];
 
   isSpinning = false;
+  errorMessage: string | null = null;
   filteredOptions:
     | Observable<{ symbol: string; description: string }[]>
     | undefined;
@@ -79,12 +80,20 @@ export class SearchBarComponent {
     } else if (typeof tickerValue === 'string') {
       // If it's a string, use the part before the '|' character
       tickerValue = tickerValue.split('|')[0].trim();
-    }
+    } else if(!tickerValue) {
+      // If the input is empty, set the error message
+      this.errorMessage = "Please enter a valid ticker";
+      return; // Prevent further execution
+    } 
 
     if (tickerValue) {
       this.router.navigate(['/search', tickerValue]);
     }
   }
+
+
+
+
 
   // In your component
   displayFn(stock: any): string {

@@ -4,294 +4,312 @@
 
 <div class="container">
   <div
-    class="row justify-content-center"
-    *ngIf="stockProfile && stockQuote && companyPeers"
+    *ngIf="errorMessage"
+    class="alert alert-danger"
+    style="text-align: center"
+    role="alert"
   >
-    <!-- First Column: Ticker, Name, Buy/Sell -->
-    <div class="col-3 box1 d-flex flex-column justify-content-center">
-      <div class="row mb-2 justify-content-center big-font">
-        <span>{{ stockProfile.ticker }}</span>
-        <i
-          class="far fa-star small-icon"
-          (click)="toggleFavorite(stockProfile, stockQuote)"
-        ></i>
-
-        <!-- <i class="far fa-star small-icon"></i> -->
-        <!-- This is the empty star icon -->
-      </div>
-      <div class="row mb-2 justify-content-center">{{ stockProfile.name }}</div>
-      <div class="row mb-2 justify-content-center responsive-iphone12">
-        {{ stockProfile.exchange }}
-      </div>
-      <div class="row justify-content-center">
-        <!-- <button type="button" class="btn btn-success mr-1">Buy</button>
-         -->
-        <button
-          type="button"
-          class="btn btn-success mr-1"
-          (click)="openBuyDialog(stockQuote.c)"
-        >
-          Buy
-        </button>
-        <button type="button" class="btn btn-danger">Sell</button>
-      </div>
-    </div>
-
-    <!-- Second Column: Logo -->
+    {{ errorMessage }}
+  </div>
+  <div class="nonerror" *ngIf="!errorMessage">
     <div
-      class="col-3 box2 d-flex justify-content-center align-items-center"
-      style="height: 100%"
+      class="row justify-content-center"
+      *ngIf="!errorMessage && stockProfile && stockQuote && companyPeers"
     >
-      <img
-        [src]="stockProfile.logo"
-        alt="Company Logo"
-        class="img-fluid my-auto"
-        style="height: 30%; width: 30%"
-      />
+      <!-- First Column: Ticker, Name, Buy/Sell -->
+      <div class="col-3 box1 d-flex flex-column justify-content-center">
+        <div class="row mb-2 justify-content-center big-font">
+          <span>{{ stockProfile.ticker }}</span>
+          <i
+            class="far fa-star small-icon"
+            (click)="toggleFavorite(stockProfile, stockQuote)"
+          ></i>
+
+          <!-- <i class="far fa-star small-icon"></i> -->
+          <!-- This is the empty star icon -->
+        </div>
+        <div class="row mb-2 justify-content-center">
+          {{ stockProfile.name }}
+        </div>
+        <div class="row mb-2 justify-content-center responsive-iphone12">
+          {{ stockProfile.exchange }}
+        </div>
+        <div class="row justify-content-center">
+          <!-- <button type="button" class="btn btn-success mr-1">Buy</button>
+       -->
+          <button
+            type="button"
+            class="btn btn-success mr-1"
+            (click)="openBuyDialog(stockQuote.c)"
+          >
+            Buy
+          </button>
+          <button type="button" class="btn btn-danger">Sell</button>
+        </div>
+      </div>
+
+      <!-- Second Column: Logo -->
+      <div
+        class="col-3 box2 d-flex justify-content-center align-items-center"
+        style="height: 100%"
+      >
+        <img
+          [src]="stockProfile.logo"
+          alt="Company Logo"
+          class="img-fluid my-auto"
+          style="height: 30%; width: 30%"
+        />
+      </div>
+
+      <!-- Third Column: Stock Details -->
+      <div class="col-3 box3">
+        <div
+          class="row mb-2 justify-content-center stock-details"
+          [ngClass]="{
+            'red-text': stockQuote.d < 0,
+            'green-text': stockQuote.d >= 0
+          }"
+        >
+          {{ stockQuote.c | number : "1.2-2" }}
+        </div>
+        <div
+          class="row mb-2 justify-content-center stock-details-2"
+          [ngClass]="{
+            'red-text': stockQuote.d < 0,
+            'green-text': stockQuote.d >= 0
+          }"
+        >
+          <span *ngIf="stockQuote.d < 0" class="arrow red-text">&#x25BC;</span>
+          <!-- Downward arrow -->
+          <span *ngIf="stockQuote.d >= 0" class="arrow green-text"
+            >&#x25B2;</span
+          >
+          <!-- Upward arrow -->
+
+          {{ stockQuote.d | number : "1.2-2" }} ({{
+            stockQuote.dp | number : "1.2-2"
+          }}%)
+        </div>
+        <div class="row justify-content-center">
+          {{ convertTimestamp(stockQuote.t) }}
+        </div>
+      </div>
+    </div>
+    <div
+      class="row row2 justify-content-center align-items-center"
+      [ngStyle]="{ color: isOpen ? 'green' : 'red' }"
+    >
+      <span *ngIf="isOpen; else marketClosed"> Market is Open </span>
+      <ng-template #marketClosed>
+        Market Closed on {{ currentDate }}
+      </ng-template>
     </div>
 
-    <!-- Third Column: Stock Details -->
-    <div class="col-3 box3">
-      <div
-        class="row mb-2 justify-content-center stock-details"
-        [ngClass]="{
-          'red-text': stockQuote.d < 0,
-          'green-text': stockQuote.d >= 0
-        }"
-      >
-        {{ stockQuote.c | number : "1.2-2" }}
-      </div>
-      <div
-        class="row mb-2 justify-content-center stock-details-2"
-        [ngClass]="{
-          'red-text': stockQuote.d < 0,
-          'green-text': stockQuote.d >= 0
-        }"
-      >
-        <span *ngIf="stockQuote.d < 0" class="arrow red-text">&#x25BC;</span>
-        <!-- Downward arrow -->
-        <span *ngIf="stockQuote.d >= 0" class="arrow green-text">&#x25B2;</span>
-        <!-- Upward arrow -->
-
-        {{ stockQuote.d | number : "1.2-2" }} ({{
-          stockQuote.dp | number : "1.2-2"
-        }}%)
-      </div>
-      <div class="row justify-content-center">
-        {{ convertTimestamp(stockQuote.t) }}
-      </div>
-    </div>
-  </div>
-  <div
-    class="row row2 justify-content-center align-items-center"
-    [ngStyle]="{ color: isOpen ? 'green' : 'red' }"
-  >
-    <span *ngIf="isOpen; else marketClosed"> Market is Open </span>
-    <ng-template #marketClosed>
-      Market Closed on {{ currentDate }}
-    </ng-template>
-  </div>
-
-  <mat-tab-group>
-    <mat-tab label="Summary">
-      <div class="container">
-        <div class="row">
-          <div class="col-12 col-md-6">
-            <div class="row">
-              <!-- Add custom class for styling and use Bootstrap's utility classes for alignment -->
-              <div
-                class="col-12 d-flex flex-column justify-content-center justify-content-md-start high-price-row"
-              >
-                <div>High Price: {{ stockQuote?.h }}</div>
-                <div>Low Price: {{ stockQuote?.l }}</div>
-                <div>Open Price: {{ stockQuote?.o }}</div>
-                <div>Prev. Close: {{ stockQuote?.pc }}</div>
-              </div>
-
-              <div
-                class="col-12 d-flex justify-content-center flex-column text-center"
-                style="padding: 10px"
-              >
-                <div style="padding: 5px">About the Company</div>
-                <div style="padding: 5px">
-                  IPO Start Date: {{ stockProfile?.ipo }}
+    <mat-tab-group>
+      <mat-tab label="Summary">
+        <div class="container">
+          <div class="row">
+            <div class="col-12 col-md-6">
+              <div class="row">
+                <!-- Add custom class for styling and use Bootstrap's utility classes for alignment -->
+                <div
+                  class="col-12 d-flex flex-column justify-content-center justify-content-md-start high-price-row"
+                >
+                  <div>High Price: {{ stockQuote?.h }}</div>
+                  <div>Low Price: {{ stockQuote?.l }}</div>
+                  <div>Open Price: {{ stockQuote?.o }}</div>
+                  <div>Prev. Close: {{ stockQuote?.pc }}</div>
                 </div>
-                <div style="padding: 5px">
-                  Industry: {{ stockProfile?.finnhubIndustry }}
-                </div>
-                <div style="padding: 5px">
-                  WebPage:
-                  <a
-                    *ngIf="stockProfile"
-                    href="{{ stockProfile?.weburl }}"
-                    target="_blank"
-                    >{{ stockProfile.weburl }}</a
-                  >
-                </div>
-                <div style="padding: 5px">
-                  Company Peers: {{ companyPeers }}
+
+                <div
+                  class="col-12 d-flex justify-content-center flex-column text-center"
+                  style="padding: 10px"
+                >
+                  <div style="padding: 5px">About the Company</div>
+                  <div style="padding: 5px">
+                    IPO Start Date: {{ stockProfile?.ipo }}
+                  </div>
+                  <div style="padding: 5px">
+                    Industry: {{ stockProfile?.finnhubIndustry }}
+                  </div>
+                  <div style="padding: 5px">
+                    WebPage:
+                    <a
+                      *ngIf="stockProfile"
+                      href="{{ stockProfile?.weburl }}"
+                      target="_blank"
+                      >{{ stockProfile.weburl }}</a
+                    >
+                  </div>
+                  <div style="padding: 5px">
+                    Company Peers: {{ companyPeers }}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div
-            class="col-12 col-md-6 d-flex align-items-center justify-content-center"
-            style="height: 100%"
-          >
-            <highcharts-chart
-              *ngIf="Highcharts && stockProfile && chartOptions"
-              [Highcharts]="Highcharts"
-              [options]="chartOptions"
-              style="width: 100%; height: 400px; display: block"
+            <div
+              class="col-12 col-md-6 d-flex align-items-center justify-content-center"
+              style="height: 100%"
             >
-            </highcharts-chart>
+              <highcharts-chart
+                *ngIf="Highcharts && stockProfile && chartOptions"
+                [Highcharts]="Highcharts"
+                [options]="chartOptions"
+                style="width: 100%; height: 400px; display: block"
+              >
+              </highcharts-chart>
+            </div>
           </div>
         </div>
-      </div>
-    </mat-tab>
+      </mat-tab>
 
-    <mat-tab label="Top News">
-      <div class="container">
-        <div class="row">
-          <div
-            class="col-sm-12 col-md-6"
-            *ngFor="let newsItem of companyNews"
-            style="padding: 10px"
-          >
+      <mat-tab label="Top News">
+        <div class="container">
+          <div class="row">
             <div
-              class="card mb-3"
-              style="
-                max-width: 540px;
-                height: 100%;
-                padding: 10px;
-                background-color: #f8f9fa;
-                margin-bottom: 15px !important;
-              "
-              (click)="openNewsModal(newsItem)"
+              class="col-sm-12 col-md-6"
+              *ngFor="let newsItem of companyNews"
+              style="padding: 10px"
             >
-              <div class="row no-gutters">
-                <div class="col-md-4">
-                  <img
-                    src="{{ newsItem.image }}"
-                    class="card-img"
-                    alt="{{ newsItem.headline }}"
-                    style="
-                      width: 70%;
-                      height: 60%;
-                      display: block;
-                      margin-top: 10%;
-                      margin-left: auto;
-                      margin-right: auto;
-                    "
-                  />
-                </div>
-                <div class="col-md-8">
-                  <div class="card-body d-flex flex-column">
-                    <!-- If you need more content, you can add it here -->
-                    <p class="card-text mt-auto">{{ newsItem.headline }}</p>
-                    <!-- Optional: if you want to include summary -->
+              <div
+                class="card mb-3"
+                style="
+                  max-width: 540px;
+                  height: 100%;
+                  padding: 10px;
+                  background-color: #f8f9fa;
+                  margin-bottom: 15px !important;
+                "
+                (click)="openNewsModal(newsItem)"
+              >
+                <div class="row no-gutters">
+                  <div class="col-md-4">
+                    <img
+                      src="{{ newsItem.image }}"
+                      class="card-img"
+                      alt="{{ newsItem.headline }}"
+                      style="
+                        width: 70%;
+                        height: 60%;
+                        display: block;
+                        margin-top: 10%;
+                        margin-left: auto;
+                        margin-right: auto;
+                      "
+                    />
+                  </div>
+                  <div class="col-md-8">
+                    <div class="card-body d-flex flex-column">
+                      <!-- If you need more content, you can add it here -->
+                      <p class="card-text mt-auto">{{ newsItem.headline }}</p>
+                      <!-- Optional: if you want to include summary -->
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </mat-tab>
-    <mat-tab label="Charts">
-      <div *ngIf="Highcharts">
-        <highcharts-chart
-          [Highcharts]="Highcharts"
-          [options]="SMA_VolchartOptions"
-          style="width: 100%; height: 400px; display: block"
-        >
-        </highcharts-chart>
-      </div>
-    </mat-tab>
-
-    <mat-tab label="Insights">
-      <div class="container">
-        <div class="row justify-content-center align-items-center">
-          <div class="col text-center">
-            <h2>Insider Sentiments</h2>
-          </div>
+      </mat-tab>
+      <mat-tab label="Charts">
+        <div *ngIf="Highcharts">
+          <highcharts-chart
+            [Highcharts]="Highcharts"
+            [options]="SMA_VolchartOptions"
+            style="width: 100%; height: 400px; display: block"
+          >
+          </highcharts-chart>
         </div>
+      </mat-tab>
 
-        <!-- First Row with a single element -->
-        <div class="row">
-          <div class="col-12">
-            <div class="p-3 border bg-light table-insigh">
-              <table
-                class="table table-insigh-custom"
-                *ngIf="insidersentiment && stockProfile"
-              >
-                <thead>
-                  <tr>
-                    <th scope="col">
-                      {{ stockProfile.name }}
-                    </th>
-                    <th scope="col">MSPR</th>
-                    <th scope="col">Change</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Total</td>
-                    <td class="font-small">{{ insidersentiment.total }}</td>
-                    <td class="font-small">
-                      {{ insidersentiment.changeTotal }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Positive</td>
-                    <td class="font-small">{{ insidersentiment.positive }}</td>
-                    <td class="font-small">
-                      {{ insidersentiment.positiveChange }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Negative</td>
-                    <td class="font-small">{{ insidersentiment.negative }}</td>
-                    <td class="font-small">
-                      {{ insidersentiment.negativeChange }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+      <mat-tab label="Insights">
+        <div class="container">
+          <div class="row justify-content-center align-items-center">
+            <div class="col text-center">
+              <h2>Insider Sentiments</h2>
             </div>
           </div>
-        </div>
 
-        <!-- Second Row with two elements -->
-        <div class="row">
-          <!-- This column will take full width on small screens and half width on medium screens and up -->
-          <div class="col-sm-12 col-md-6">
-            <div class="p-3 border bg-light">
-              <div *ngIf="Highcharts">
-                <highcharts-chart
-                  [Highcharts]="Highcharts"
-                  [options]="recChartOptions"
-                  style="width: 100%; height: 400px; display: block"
+          <!-- First Row with a single element -->
+          <div class="row">
+            <div class="col-12">
+              <div class="p-3 border bg-light table-insigh">
+                <table
+                  class="table table-insigh-custom"
+                  *ngIf="insidersentiment && stockProfile"
                 >
-                </highcharts-chart>
+                  <thead>
+                    <tr>
+                      <th scope="col">
+                        {{ stockProfile.name }}
+                      </th>
+                      <th scope="col">MSPR</th>
+                      <th scope="col">Change</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Total</td>
+                      <td class="font-small">{{ insidersentiment.total }}</td>
+                      <td class="font-small">
+                        {{ insidersentiment.changeTotal }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Positive</td>
+                      <td class="font-small">
+                        {{ insidersentiment.positive }}
+                      </td>
+                      <td class="font-small">
+                        {{ insidersentiment.positiveChange }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Negative</td>
+                      <td class="font-small">
+                        {{ insidersentiment.negative }}
+                      </td>
+                      <td class="font-small">
+                        {{ insidersentiment.negativeChange }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
-          <!-- This column will do the same as the previous one -->
-          <div class="col-sm-12 col-md-6">
-            <div class="p-3 border bg-light">
-              <div *ngIf="Highcharts">
-                <highcharts-chart
-                  [Highcharts]="Highcharts"
-                  [options]="companyEarningsChartOptions"
-                  style="width: 100%; height: 400px; display: block"
-                >
-                </highcharts-chart>
+
+          <!-- Second Row with two elements -->
+          <div class="row">
+            <!-- This column will take full width on small screens and half width on medium screens and up -->
+            <div class="col-sm-12 col-md-6">
+              <div class="p-3 border bg-light">
+                <div *ngIf="Highcharts">
+                  <highcharts-chart
+                    [Highcharts]="Highcharts"
+                    [options]="recChartOptions"
+                    style="width: 100%; height: 400px; display: block"
+                  >
+                  </highcharts-chart>
+                </div>
+              </div>
+            </div>
+            <!-- This column will do the same as the previous one -->
+            <div class="col-sm-12 col-md-6">
+              <div class="p-3 border bg-light">
+                <div *ngIf="Highcharts">
+                  <highcharts-chart
+                    [Highcharts]="Highcharts"
+                    [options]="companyEarningsChartOptions"
+                    style="width: 100%; height: 400px; display: block"
+                  >
+                  </highcharts-chart>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </mat-tab>
-  </mat-tab-group>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
 </div>

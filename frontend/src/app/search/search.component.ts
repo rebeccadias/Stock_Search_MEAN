@@ -37,6 +37,7 @@ export class SearchComponent implements OnInit {
   recChartOptions!: Highcharts.Options;
 
   selectedNewsItem: any;
+  errorMessage: string | null = null;
 
   constructor(
     public dialog: MatDialog,
@@ -85,22 +86,27 @@ export class SearchComponent implements OnInit {
       news: this.appService.fetchCompanyNews(ticker),
       sentiment: this.appService.fetchInsiderSentiment(ticker),
     }).subscribe(({ profile, quote, peers, news, sentiment }) => {
-      // Update component state with new data
-      this.stockProfile = profile;
-      this.stockQuote = quote;
-      this.companyPeers = peers;
-      this.companyNews = news;
-      this.insidersentiment = sentiment;
+      if (Object.keys(profile).length === 0) {
+        this.errorMessage = 'No data found. Please enter a valid ticker.';
+      } else {
+        this.errorMessage = null;
+        // Update component state with new data
+        this.stockProfile = profile;
+        this.stockQuote = quote;
+        this.companyPeers = peers;
+        this.companyNews = news;
+        this.insidersentiment = sentiment;
 
-      // Cache the new data
-      this.appService.cacheLastSearchResult({
-        ticker: ticker,
-        profile: profile,
-        quote: quote,
-        peers: peers,
-        news: news,
-        sentiment: sentiment,
-      });
+        // Cache the new data
+        this.appService.cacheLastSearchResult({
+          ticker: ticker,
+          profile: profile,
+          quote: quote,
+          peers: peers,
+          news: news,
+          sentiment: sentiment,
+        });
+      }
     });
   }
 

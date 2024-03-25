@@ -16,7 +16,7 @@
         class="form-control rounded-pill"
         (keyup.enter)="performSearch()"
         placeholder="Enter stock ticker symbol"
-        style="border: 2px solid #1d279d;"
+        style="border: 2px solid #1d279d"
       />
       <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
         <mat-option *ngIf="isSpinning" class="spinner-option">
@@ -24,16 +24,14 @@
             mode="indeterminate"
             diameter="20"
           ></mat-progress-spinner>
-       
         </mat-option>
-        
+
         <mat-option
           *ngFor="let option of filteredOptions | async"
           [value]="option"
         >
           {{ option.symbol }} | {{ option.description }}
         </mat-option>
- 
       </mat-autocomplete>
       <i
         class="fas fa-search search-icon grey-icon"
@@ -43,8 +41,13 @@
         class="fas fa-times clear-icon grey-icon"
         (click)="myControl.setValue('')"
       ></i>
-      
     </div>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
 </div>
 <router-outlet></router-outlet>
