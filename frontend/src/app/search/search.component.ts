@@ -356,6 +356,15 @@ export class SearchComponent implements OnInit {
   setupSMA_VolChart(data: any, ticker: string) {
     const ohlc = [];
     const volume = [];
+    ticker = ticker.toUpperCase();
+
+    const groupingUnits: [string, number[]][] = [
+      [
+        'week', // unit name
+        [1], // allowed multiples
+      ],
+      ['month', [1, 2, 3, 4, 6]],
+    ];
 
     for (let i = 0; i < data.length; i++) {
       const point = data[i];
@@ -374,17 +383,65 @@ export class SearchComponent implements OnInit {
     }
 
     this.SMA_VolchartOptions = {
-      rangeSelector: { selected: 2 },
-      title: { text: 'With SMA and Volume by Price technical indicators' },
+      rangeSelector: {
+        inputEnabled: true,
+        enabled: true,
+        buttons: [
+          {
+            type: 'month',
+            count: 1,
+            text: '1m',
+          },
+          {
+            type: 'month',
+            count: 3,
+            text: '3m',
+          },
+          {
+            type: 'month',
+            count: 6,
+            text: '6m',
+          },
+          {
+            type: 'ytd',
+            text: 'YTD',
+          },
+          {
+            type: 'year',
+            count: 1,
+            text: '1y',
+          },
+          {
+            type: 'all',
+
+            text: 'All',
+          },
+        ],
+        selected: 2,
+      },
+      navigator: {
+        enabled: true, // Disable the navigator
+      },
+      scrollbar: {
+        enabled: true, // Disable the scrollbar
+      },
+      title: { text: `${ticker} Historical` },
+      subtitle: {
+        text: 'With SMA and Volume by Price technical indicators',
+      },
+      xAxis: {
+        type: 'datetime',
+      },
       yAxis: [
         {
           labels: { align: 'right', x: -3 },
           title: { text: 'OHLC' },
-          height: '60%',
+          height: '55%',
           lineWidth: 2,
           resize: { enabled: true },
           startOnTick: false,
           endOnTick: false,
+          opposite: true, // Move this axis to the right side
         },
         {
           labels: { align: 'right', x: -3 },
@@ -393,9 +450,19 @@ export class SearchComponent implements OnInit {
           height: '35%',
           offset: 0,
           lineWidth: 2,
+          opposite: true, // Move this axis to the right side
         },
       ],
+
       tooltip: { split: true },
+      plotOptions: {
+        series: {
+          dataGrouping: {
+            units: groupingUnits,
+          },
+          showInLegend: false,
+        },
+      },
       series: [
         {
           type: 'candlestick',
