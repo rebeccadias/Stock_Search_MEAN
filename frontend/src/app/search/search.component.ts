@@ -8,6 +8,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { BuyDialogComponent } from '../buy-dialog/buy-dialog.component';
 import { Router, NavigationEnd } from '@angular/router';
 import { Input } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import vbp from 'highcharts/indicators/volume-by-price';
 import indicators from 'highcharts/indicators/indicators';
@@ -31,6 +33,8 @@ export class SearchComponent implements OnInit {
   currentDate: string = '';
   companyEarningsChartOptions!: Highcharts.Options;
   Highcharts: typeof Highcharts = Highcharts;
+  summaryChart: any;
+  mainChart: any;
 
   chartOptions!: Highcharts.Options;
   SMA_VolchartOptions!: Highcharts.Options;
@@ -38,6 +42,9 @@ export class SearchComponent implements OnInit {
 
   selectedNewsItem: any;
   errorMessage: string | null = null;
+  private subscriptions: Subscription = new Subscription();
+  
+  private quoteSubscription: Subscription | null = null;
 
   constructor(
     public dialog: MatDialog,
@@ -47,6 +54,7 @@ export class SearchComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+
     this.activatedRoute.params.subscribe((params) => {
       let ticker = params['ticker'];
       // Before loading new data, check if we have cached data
@@ -55,7 +63,21 @@ export class SearchComponent implements OnInit {
         ticker = cachedData.ticker;
       }
 
+      if (this.quoteSubscription) {
+        this.quoteSubscription.unsubscribe();
+        this.quoteSubscription = null;
+      }
+
+      // Setup periodic refresh for the stock quote
+      this.quoteSubscription = interval(15000).pipe(
+        switchMap(() => this.appService.fetchStockQuote(ticker))
+      ).subscribe(quote => {
+        this.stockQuote = quote;
+        // You might need to update the chart or other components that use the stock quote
+      });
+
       this.router.navigate(['/search', ticker]);
+      console.log(cachedData);
       if (cachedData) {
         // If the cached data matches the current ticker, use it instead of loading new data
         this.stockProfile = cachedData.profile;
@@ -63,13 +85,17 @@ export class SearchComponent implements OnInit {
         this.companyPeers = cachedData.peers;
         this.companyNews = cachedData.news;
         this.insidersentiment = cachedData.sentiment;
+        this.setupChart(cachedData.summaryChart, cachedData.ticker, this.stockQuote.d);
+        // this.loadHistoricalData2years(ticker);
+        this.setupSMA_VolChart(cachedData.mainChart.results, cachedData.ticker);
         // Note: Ensure these properties are correctly assigned based on your caching structure
       } else {
         // If no cached data matches, proceed to load new data
         this.loadStockDetails(ticker);
+        // this.loadHistoricalData2years(ticker);
       }
       // this.loadHistoricalData(ticker, this.stockQuote.d);
-      this.loadHistoricalData(ticker);
+      // this.loadHistoricalData(ticker);
       this.loadHistoricalData2years(ticker);
       this.loadCompanyEarningsData(ticker);
       this.loadCompanyRecData(ticker);
@@ -78,6 +104,40 @@ export class SearchComponent implements OnInit {
     this.setCurrentDate();
   }
 
+  // loadInitialData(ticker: string) {
+  //   // Before loading new data, check if we have cached data
+  //   const cachedData = this.appService.getLastSearchResult();
+  //   if (ticker === ':ticker') {
+  //     ticker = cachedData ? cachedData.ticker : '';
+  //   }
+  
+  //   this.router.navigate(['/search', ticker]);
+  //   console.log(cachedData);
+  //   if (cachedData) {
+  //     // If the cached data matches the current ticker, use it instead of loading new data
+  //     this.setupCachedData(cachedData, ticker);
+  //   } else {
+  //     // If no cached data matches, proceed to load new data
+  //     this.loadStockDetails(ticker);
+  //   }
+  // }
+
+  // setupCachedData(cachedData: any, ticker: string) {
+  //   this.stockProfile = cachedData.profile;
+  //   // this.stockQuote = cachedData.quote;
+  //   this.companyPeers = cachedData.peers;
+  //   this.companyNews = cachedData.news;
+  //   this.insidersentiment = cachedData.sentiment;
+  //   this.setupChart(cachedData.summaryChart, ticker, this.stockQuote.d);
+  // }
+
+  // ngOnDestroy() {
+  //   // Unsubscribe to ensure no memory leaks
+  //   if (this.quoteSubscription) {
+  //     this.quoteSubscription.unsubscribe();
+  //   }
+  // }  
+
   loadStockDetails(ticker: string) {
     forkJoin({
       profile: this.appService.fetchStockProfile(ticker),
@@ -85,7 +145,9 @@ export class SearchComponent implements OnInit {
       peers: this.appService.fetchCompanyPeers(ticker),
       news: this.appService.fetchCompanyNews(ticker),
       sentiment: this.appService.fetchInsiderSentiment(ticker),
-    }).subscribe(({ profile, quote, peers, news, sentiment }) => {
+      summaryChart: this.loadHistoricalData(ticker),
+      mainChart: this.loadHistoricalData2years(ticker),
+    }).subscribe(({ profile, quote, peers, news, sentiment, summaryChart, mainChart }) => {
       if (Object.keys(profile).length === 0) {
         this.errorMessage = 'No data found. Please enter a valid ticker.';
       } else {
@@ -96,6 +158,8 @@ export class SearchComponent implements OnInit {
         this.companyPeers = peers;
         this.companyNews = news;
         this.insidersentiment = sentiment;
+        this.summaryChart = summaryChart;
+        this.mainChart = mainChart;
 
         // Cache the new data
         this.appService.cacheLastSearchResult({
@@ -105,7 +169,18 @@ export class SearchComponent implements OnInit {
           peers: peers,
           news: news,
           sentiment: sentiment,
+          summaryChart: summaryChart,
+          mainChart: mainChart,
         });
+        // Introduce a 3-second delay before calling setupChart
+        console.log(this.summaryChart,ticker,this.stockQuote.d);
+        setTimeout(() => {
+          this.setupChart(this.summaryChart, ticker, this.stockQuote.d);
+        }, 3000); // 1000 milliseconds = 1 seconds
+        console.log(this.mainChart,ticker);
+        setTimeout(() => {
+          this.setupSMA_VolChart(this.mainChart.results, ticker);
+        }, 5000); // 1000 milliseconds = 1 seconds
       }
     });
   }
@@ -181,16 +256,19 @@ export class SearchComponent implements OnInit {
 
     const from = fromDate.toISOString().split('T')[0];
 
-    this.appService.fetchHistoricalData(ticker, from, to).subscribe(
-      (data) => {
-        const d = this.stockQuote.d;
-
-        this.setupChart(data, ticker, d);
-      },
-      (error) => {
-        console.error('Error fetching historical data:', error);
-      }
-    );
+    // this.appService.fetchHistoricalData(ticker, from, to).subscribe(
+    //   (data) => {
+    //     console.log(this.stockQuote,data);
+    //     const d = this.stockQuote.d;
+    //     this.summaryChart = data;
+    //     this.setupChart(data, ticker, d);
+    //     return data;
+    //   },
+    //   (error) => {
+    //     console.error('Error fetching historical data:', error);
+    //   }
+    // );
+    return this.appService.fetchHistoricalData(ticker, from, to);
   }
 
   loadHistoricalData2years(ticker: string) {
@@ -204,14 +282,15 @@ export class SearchComponent implements OnInit {
     fromDate.setFullYear(fromDate.getFullYear() - 2); // Subtract 2 years
     const from = fromDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
 
-    this.appService.fetchHistoricalData2years(ticker, from, to).subscribe(
-      (data) => {
-        this.setupSMA_VolChart(data.results, ticker); // Setup SMA Chart
-      },
-      (error) => {
-        console.error('Error fetching historical 2 year data:', error);
-      }
-    );
+    // this.appService.fetchHistoricalData2years(ticker, from, to).subscribe(
+    //   (data) => {
+    //     this.setupSMA_VolChart(data.results, ticker); // Setup SMA Chart
+    //   },
+    //   (error) => {
+    //     console.error('Error fetching historical 2 year data:', error);
+    //   }
+    // );
+    return this.appService.fetchHistoricalData2years(ticker, from, to);
   }
 
   loadCompanyEarningsData(ticker: string) {
