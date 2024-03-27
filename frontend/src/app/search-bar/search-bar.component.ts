@@ -45,9 +45,8 @@ export class SearchBarComponent {
         // Reset myControl or its value here if needed
         Example: this.myControl.setValue('');
       });
-    
+
     const cachedData = this.appService.getLastSearchResult();
-   
   }
 
   // Assume searchStocks returns Observable<any[]>, where each item has at least symbol and description properties
@@ -80,20 +79,16 @@ export class SearchBarComponent {
     } else if (typeof tickerValue === 'string') {
       // If it's a string, use the part before the '|' character
       tickerValue = tickerValue.split('|')[0].trim();
-    } else if(!tickerValue) {
+    } else if (!tickerValue) {
       // If the input is empty, set the error message
-      this.errorMessage = "Please enter a valid ticker";
+      this.errorMessage = 'Please enter a valid ticker';
       return; // Prevent further execution
-    } 
+    }
 
     if (tickerValue) {
       this.router.navigate(['/search', tickerValue]);
     }
   }
-
-
-
-
 
   // In your component
   displayFn(stock: any): string {
@@ -104,5 +99,6 @@ export class SearchBarComponent {
 
   clearInput() {
     this.myControl.setValue('');
+    this.router.navigate(['/search/home']);
   }
 }
