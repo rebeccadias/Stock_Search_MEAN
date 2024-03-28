@@ -1,7 +1,9 @@
-<h2 mat-dialog-title>
-    <span>{{ data.ticker }}</span>
-    <span class="close-icon" (click)="closeDialog()">&#x2715;</span>
-  </h2>
+<h2 mat-dialog-title class="d-flex justify-content-between align-items-center pad">
+  <span class="flex-grow-1">{{ data.ticker }}</span>
+  <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</h2>
   
   <hr/>
   
@@ -21,6 +23,5 @@
   
   <mat-dialog-actions class="action-row">
     <span>Total: ${{ totalCost }}</span>
-    <button mat-raised-button color="primary" [disabled]="!canBuy" [mat-dialog-close]="{quantity: quantity}">Buy</button>
+    <button class="btn-success" mat-raised-button [disabled]="!canBuy" [mat-dialog-close]="{quantity: quantity}">Buy</button>
   </mat-dialog-actions>
-  

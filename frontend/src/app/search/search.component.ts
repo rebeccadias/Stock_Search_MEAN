@@ -36,6 +36,7 @@ export class SearchComponent implements OnInit {
   Highcharts: typeof Highcharts = Highcharts;
   summaryChart: any;
   mainChart: any;
+  hasCachedData: boolean = false;
 
   chartOptions!: Highcharts.Options;
   SMA_VolchartOptions!: Highcharts.Options;
@@ -46,6 +47,7 @@ export class SearchComponent implements OnInit {
   stockSellMsg: string = '';
   stockBuylMsg: string = '';
   private subscriptions: Subscription = new Subscription();
+  ticker: string = '';
 
   private quoteSubscription: Subscription | null = null;
 
@@ -58,11 +60,11 @@ export class SearchComponent implements OnInit {
 
   ngOnInit() {
     this.activatedRoute.params.subscribe((params) => {
-      let ticker = params['ticker'];
+      this.ticker = params['ticker'];
       // Before loading new data, check if we have cached data
       const cachedData = this.appService.getLastSearchResult();
-      if (ticker === ':ticker') {
-        ticker = cachedData.ticker;
+      if (this.ticker === ':ticker') {
+        this.ticker = cachedData.ticker;
       }
 
       if (this.quoteSubscription) {
@@ -72,16 +74,17 @@ export class SearchComponent implements OnInit {
 
       // Setup periodic refresh for the stock quote
       this.quoteSubscription = interval(15000)
-        .pipe(switchMap(() => this.appService.fetchStockQuote(ticker)))
+        .pipe(switchMap(() => this.appService.fetchStockQuote(this.ticker)))
         .subscribe((quote) => {
           this.stockQuote = quote;
           // You might need to update the chart or other components that use the stock quote
         });
 
-      this.router.navigate(['/search', ticker]);
+      this.router.navigate(['/search', this.ticker]);
       console.log(cachedData);
       if (cachedData) {
         // If the cached data matches the current ticker, use it instead of loading new data
+        this.hasCachedData = true; 
         this.stockProfile = cachedData.profile;
         this.stockQuote = cachedData.quote;
         this.companyPeers = cachedData.peers;
@@ -97,52 +100,17 @@ export class SearchComponent implements OnInit {
         // Note: Ensure these properties are correctly assigned based on your caching structure
       } else {
         // If no cached data matches, proceed to load new data
-        this.loadStockDetails(ticker);
+        this.hasCachedData = false; 
+        this.loadStockDetails(this.ticker);
         // this.loadHistoricalData2years(ticker);
       }
-      // this.loadHistoricalData(ticker, this.stockQuote.d);
-      // this.loadHistoricalData(ticker);
-      this.loadHistoricalData2years(ticker);
-      this.loadCompanyEarningsData(ticker);
-      this.loadCompanyRecData(ticker);
+      this.loadHistoricalData2years(this.ticker);
+      this.loadCompanyEarningsData(this.ticker);
+      this.loadCompanyRecData(this.ticker);
     });
     this.checkMarketStatus();
     this.setCurrentDate();
   }
-
-  // loadInitialData(ticker: string) {
-  //   // Before loading new data, check if we have cached data
-  //   const cachedData = this.appService.getLastSearchResult();
-  //   if (ticker === ':ticker') {
-  //     ticker = cachedData ? cachedData.ticker : '';
-  //   }
-
-  //   this.router.navigate(['/search', ticker]);
-  //   console.log(cachedData);
-  //   if (cachedData) {
-  //     // If the cached data matches the current ticker, use it instead of loading new data
-  //     this.setupCachedData(cachedData, ticker);
-  //   } else {
-  //     // If no cached data matches, proceed to load new data
-  //     this.loadStockDetails(ticker);
-  //   }
-  // }
-
-  // setupCachedData(cachedData: any, ticker: string) {
-  //   this.stockProfile = cachedData.profile;
-  //   // this.stockQuote = cachedData.quote;
-  //   this.companyPeers = cachedData.peers;
-  //   this.companyNews = cachedData.news;
-  //   this.insidersentiment = cachedData.sentiment;
-  //   this.setupChart(cachedData.summaryChart, ticker, this.stockQuote.d);
-  // }
-
-  // ngOnDestroy() {
-  //   // Unsubscribe to ensure no memory leaks
-  //   if (this.quoteSubscription) {
-  //     this.quoteSubscription.unsubscribe();
-  //   }
-  // }
 
   loadStockDetails(ticker: string) {
     forkJoin({
@@ -183,8 +151,8 @@ export class SearchComponent implements OnInit {
           console.log(this.summaryChart, ticker, this.stockQuote.d);
           setTimeout(() => {
             this.setupChart(this.summaryChart, ticker, this.stockQuote.d);
-          }, 3000); // 1000 milliseconds = 1 seconds
-          console.log(this.mainChart, ticker);
+          }, 1000); // 1000 milliseconds = 1 seconds
+          // console.log(this.mainChart, ticker);
           setTimeout(() => {
             this.setupSMA_VolChart(this.mainChart.results, ticker);
           }, 5000); // 1000 milliseconds = 1 seconds
@@ -330,34 +298,70 @@ export class SearchComponent implements OnInit {
     const lineColor = d < 0 ? 'red' : 'green';
 
     this.chartOptions = {
-      series: [
-        {
-          type: 'line',
-          data: data.results.map((d: { t: number; c: number }) => [
-            d.t * 1000,
-            d.c,
-          ]),
-          color: lineColor, // Set color based on condition
-        },
-      ],
-      title: {
-        text: `${ticker} Hourly Price Variation`, // Dynamic title
-      },
+      series: [{
+        type: 'line',
+        name: 'AAPL Close Price',
+        data: data.results.map((d: { t: any; c: any; }) => [d.t, d.c]),
+        color: lineColor, // Adjust based on your conditions
+        marker: {
+          enabled: false // This disables the markers
+        }
+      }],
+      title: { text: `${ticker} Hourly Price Variation` },
       xAxis: {
         type: 'datetime',
         dateTimeLabelFormats: {
-          // Display only the hour
           hour: '%H:%M',
         },
-        tickInterval: 3600 * 1000, // Hourly intervals
+        title: { text: 'Time' }
       },
       yAxis: {
-        title: {
-          text: 'Price',
-        },
-        opposite: true, // Move Y-axis to the right
+        title: { text: 'Price (USD)' },
+        opposite: true,
+      },
+      tooltip: {
+        shared: true,
+        valuePrefix: '$',
+        xDateFormat: '%Y-%m-%d %H:%M', // Adjust the date format as needed
+      },
+      plotOptions: {
+        series: {
+          label: { connectorAllowed: false },
+          pointStart: 2010
+        }
       },
     };
+    
+
+    // this.chartOptions = {
+    //   series: [
+    //     {
+    //       type: 'line',
+    //       data: data.results.map((d: { t: number; c: number }) => [
+    //         d.t * 1000,
+    //         d.c,
+    //       ]),
+    //       color: lineColor, // Set color based on condition
+    //     },
+    //   ],
+    //   title: {
+    //     text: `${ticker} Hourly Price Variation`, // Dynamic title
+    //   },
+    //   xAxis: {
+    //     type: 'datetime',
+    //     dateTimeLabelFormats: {
+    //       // Display only the hour
+    //       hour: '%H:%M',
+    //     },
+    //     tickInterval: 3600 * 1000, // Hourly intervals
+    //   },
+    //   yAxis: {
+    //     title: {
+    //       text: 'Price',
+    //     },
+    //     opposite: true, // Move Y-axis to the right
+    //   },
+    // };
   }
 
   // Part of SearchComponent
@@ -638,6 +642,7 @@ export class SearchComponent implements OnInit {
       ],
     };
   }
+
   setupEarningsChart(data: any) {
     // function for drawing line on the graph after the chart has been rendered
 
@@ -845,4 +850,23 @@ export class SearchComponent implements OnInit {
       },
     };
   }
+  
+  routeToPeer(ticker: string) {
+
+    console.log(this.hasCachedData);
+    this.mainChart = null;
+    this.hasCachedData = true;
+    this.router.navigate(['/search', ticker]);
+    this.loadStockDetails(ticker);
+
+    // if (this.router.url.includes(`/search/${ticker}`)) {
+    //   // If already viewing the ticker, you might want to manually trigger data reload
+    //   this.loadStockDetails(ticker);
+    // } else {
+    //   // Navigate and rely on ngOnInit or params subscription to handle data loading
+    //   this.router.navigate(['/search', ticker], { queryParamsHandling: 'merge' });
+    // }
+  }
+  
+  
 }

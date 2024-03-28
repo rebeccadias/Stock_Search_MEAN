@@ -28,6 +28,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NewsModalComponent } from './news-modal/news-modal.component';
 import { SellDialogComponent } from './sell-dialog/sell-dialog.component';
+import { SummaryChartComponent } from './summary-chart/summary-chart.component';
+import { MainChartComponent } from './main-chart/main-chart.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +42,8 @@ import { SellDialogComponent } from './sell-dialog/sell-dialog.component';
     BuyDialogComponent,
     NewsModalComponent,
     SellDialogComponent,
+    SummaryChartComponent,
+    MainChartComponent,
   ],
   imports: [
     BrowserModule,

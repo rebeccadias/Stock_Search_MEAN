@@ -25,6 +25,7 @@ export class WatchlistComponent implements OnInit {
   }
 
   redirectToPage(url: string): void {
+    this.appService.clearCache();
     this.router.navigate([url]);
   }
 
