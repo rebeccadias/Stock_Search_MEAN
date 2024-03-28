@@ -101,4 +101,12 @@ export class SearchBarComponent {
     this.myControl.setValue('');
     this.router.navigate(['/search/home']);
   }
+
+  optionSelected(option: any) {
+    // Set the selected option value to the input field
+    this.myControl.setValue(option);
+
+    // Trigger the search
+    this.performSearch();
+  }
 }
