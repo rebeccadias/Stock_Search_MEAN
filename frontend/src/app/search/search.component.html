@@ -43,15 +43,15 @@
         <div class="row mb-2 justify-content-center big-font">
           <span>{{ stockProfile.ticker }}</span>
           <i
-          class="fa-star small-icon 
+            class="fa-star small-icon 
           {{ isFavorite ? 'fas' : 'far' }} "
-          (click)="toggleFavorite(stockProfile, stockQuote)"
-        ></i>
+            (click)="toggleFavorite(stockProfile, stockQuote)"
+          ></i>
 
           <!-- <i class="far fa-star small-icon"></i> -->
           <!-- This is the empty star icon -->
         </div>
-        <div class="row mb-2 justify-content-center" style="font-size: 18px;">
+        <div class="row mb-2 justify-content-center" style="font-size: 18px">
           {{ stockProfile.name }}
         </div>
         <div class="row mb-2 justify-content-center responsive-iphone12">
@@ -144,25 +144,47 @@
                 <div
                   class="col-12 d-flex flex-column justify-content-center justify-content-md-start high-price-row pad"
                 >
-                  <div><b>High Price:</b> {{ stockQuote?.h }}</div>
-                  <div><strong>Low Price:</strong> {{ stockQuote?.l }}</div>
-                  <div><strong>Open Price:</strong> {{ stockQuote?.o }}</div>
-                  <div><strong>Prev. Close:</strong> {{ stockQuote?.pc }}</div>
+                  <div>
+                    <span class="boldedtext">High Price:</span>
+                    {{ stockQuote?.h }}
+                  </div>
+                  <div>
+                    <span class="boldedtext">Low Price:</span>
+                    {{ stockQuote?.l }}
+                  </div>
+                  <div>
+                    <span class="boldedtext">Open Price:</span>
+                    {{ stockQuote?.o }}
+                  </div>
+                  <div>
+                    <span class="boldedtext">Prev. Close:</span>
+                    {{ stockQuote?.pc }}
+                  </div>
                 </div>
 
                 <div
                   class="col-12 d-flex justify-content-center flex-column text-center"
                   style="padding: 10px"
                 >
-                <div style="padding: 5px; font-weight: bold; text-decoration: underline;">About the Company</div>
-                  <div style="padding: 5px">
-                    IPO Start Date: {{ stockProfile?.ipo }}
+                  <div
+                    style="
+                      padding: 5px;
+                      font-weight: bold;
+                      text-decoration: underline;
+                    "
+                  >
+                    About the Company
                   </div>
                   <div style="padding: 5px">
-                    Industry: {{ stockProfile?.finnhubIndustry }}
+                    <span class="boldedtext"> IPO Start Date:</span>
+                    {{ stockProfile?.ipo }}
                   </div>
                   <div style="padding: 5px">
-                    WebPage:
+                    <span class="boldedtext">Industry: </span
+                    >{{ stockProfile?.finnhubIndustry }}
+                  </div>
+                  <div style="padding: 5px">
+                    <span class="boldedtext"> WebPage: </span>
                     <a
                       *ngIf="stockProfile"
                       href="{{ stockProfile?.weburl }}"
@@ -171,11 +193,17 @@
                     >
                   </div>
                   <div style="padding: 5px">
-                    <span style="font-weight: bold; text-decoration: underline;">Company Peers: </span><br>
+                    <span style="font-weight: bold; "
+                      >Company Peers: </span
+                    ><br />
                     <span *ngFor="let peer of companyPeers; let i = index">
-                      <a (click)="routeToPeer(peer)" style="color: blue; text-decoration: underline;">{{ peer }}</a><span *ngIf="i < companyPeers.length - 1">, </span>
+                      <a
+                        (click)="routeToPeer(peer)"
+                        style="color: #3d96ff; text-decoration: underline"
+                        >{{ peer }}</a
+                      ><span *ngIf="i < companyPeers.length - 1">, </span>
                     </span>
-                  </div>                  
+                  </div>
                 </div>
               </div>
             </div>
@@ -183,7 +211,9 @@
               class="col-12 col-md-6 d-flex align-items-center justify-content-center"
               style="height: 100%"
             >
-            <app-summary-chart [chartOptions]="chartOptions"></app-summary-chart>
+              <app-summary-chart
+                [chartOptions]="chartOptions"
+              ></app-summary-chart>
               <!-- <highcharts-chart
                 *ngIf="Highcharts && stockProfile && chartOptions"
                 [Highcharts]="Highcharts"
@@ -233,9 +263,7 @@
                   </div>
                   <div class="col-md-8">
                     <div class="card-body d-flex flex-column">
-                     
                       <p class="card-text mt-auto">{{ newsItem.headline }}</p>
-                    
                     </div>
                   </div>
                 </div>
@@ -248,29 +276,33 @@
         <!-- Conditionally render based on the hasCachedData flag -->
         <ng-container *ngIf="hasCachedData; else useMainChartComponent">
           <!-- Content when cached data exists -->
-          <highcharts-chart 
+          <highcharts-chart
             *ngIf="Highcharts && SMA_VolchartOptions"
             [Highcharts]="Highcharts"
             [options]="SMA_VolchartOptions"
-            style="width: 100%; height: 400px; display: block">
+            style="width: 100%; height: 400px; display: block"
+          >
           </highcharts-chart>
         </ng-container>
-        
+
         <!-- Fallback content using MainChartComponent -->
         <ng-template #useMainChartComponent>
           <div *ngIf="mainChart && ticker">
-            <app-main-chart [chartData]="mainChart.results" [ticker]="ticker"></app-main-chart>
+            <app-main-chart
+              [chartData]="mainChart.results"
+              [ticker]="ticker"
+            ></app-main-chart>
           </div>
           <!-- <app-main-chart [chartData]="mainChart.results" [ticker]="ticker"></app-main-chart> -->
         </ng-template>
       </mat-tab>
-      
+
       <!-- <mat-tab label="Charts">
         <div *ngIf="mainChart && ticker">
           <app-main-chart [chartData]="mainChart.results" [ticker]="ticker"></app-main-chart>
         </div>
       </mat-tab> -->
-      
+
       <!-- <mat-tab label="Charts">
         <div *ngIf="Highcharts">
           <highcharts-chart

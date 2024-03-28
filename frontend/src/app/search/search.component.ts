@@ -315,7 +315,7 @@ export class SearchComponent implements OnInit {
       navigator: { enabled: false },
       legend: { enabled: false },
       subtitle: {
-        text: `<b style="color: grey" >${ticker} Hourly Price Variation</b>`,
+        text: `<b style="color: grey" class="boldedtext" >${ticker} Hourly Price Variation</b>`,
         useHTML: true,
       },
       series: [
