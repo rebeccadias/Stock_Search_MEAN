@@ -84,7 +84,7 @@ export class SearchComponent implements OnInit {
       console.log(cachedData);
       if (cachedData) {
         // If the cached data matches the current ticker, use it instead of loading new data
-        this.hasCachedData = true; 
+        this.hasCachedData = true;
         this.stockProfile = cachedData.profile;
         this.stockQuote = cachedData.quote;
         this.companyPeers = cachedData.peers;
@@ -100,7 +100,7 @@ export class SearchComponent implements OnInit {
         // Note: Ensure these properties are correctly assigned based on your caching structure
       } else {
         // If no cached data matches, proceed to load new data
-        this.hasCachedData = false; 
+        this.hasCachedData = false;
         this.loadStockDetails(this.ticker);
         // this.loadHistoricalData2years(ticker);
       }
@@ -295,73 +295,57 @@ export class SearchComponent implements OnInit {
   }
 
   setupChart(data: any, ticker: string, d: number) {
-    const lineColor = d < 0 ? 'red' : 'green';
-
+    ticker = ticker.toUpperCase();
+    const data_new: number[][] = [];
+    for (let i = 0; i < data.results.length; i++) {
+      const d = data.results[i];
+      data_new.push([d.t, d.c]);
+    }
     this.chartOptions = {
-      series: [{
+      chart: {
         type: 'line',
-        name: 'AAPL Close Price',
-        data: data.results.map((d: { t: any; c: any; }) => [d.t, d.c]),
-        color: lineColor, // Adjust based on your conditions
-        marker: {
-          enabled: false // This disables the markers
-        }
-      }],
-      title: { text: `${ticker} Hourly Price Variation` },
+        backgroundColor: '#f8f8f8',
+      },
       xAxis: {
         type: 'datetime',
-        dateTimeLabelFormats: {
-          hour: '%H:%M',
+      },
+      title: { text: '' },
+      rangeSelector: { enabled: false },
+      navigator: { enabled: false },
+      legend: { enabled: false },
+      subtitle: {
+        text: `<b style="color: grey" >${ticker} Hourly Price Variation</b>`,
+        useHTML: true,
+      },
+      series: [
+        {
+          type: 'line',
+          name: ticker,
+          data: data_new,
+          color: d > 0 ? 'green' : 'red',
+          tooltip: { valueDecimals: 2 },
         },
-        title: { text: 'Time' }
-      },
+      ],
       yAxis: {
-        title: { text: 'Price (USD)' },
+        title: { text: null },
+        showLastLabel: false,
+        labels: {
+          align: 'right',
+          y: -2,
+          x: 0,
+          style: { fontSize: 'x-small' },
+        },
         opposite: true,
-      },
-      tooltip: {
-        shared: true,
-        valuePrefix: '$',
-        xDateFormat: '%Y-%m-%d %H:%M', // Adjust the date format as needed
       },
       plotOptions: {
         series: {
-          label: { connectorAllowed: false },
-          pointStart: 2010
-        }
+          marker: {
+            enabled: false, // Disable markers for all series
+          },
+        },
       },
+      exporting: { enabled: false },
     };
-    
-
-    // this.chartOptions = {
-    //   series: [
-    //     {
-    //       type: 'line',
-    //       data: data.results.map((d: { t: number; c: number }) => [
-    //         d.t * 1000,
-    //         d.c,
-    //       ]),
-    //       color: lineColor, // Set color based on condition
-    //     },
-    //   ],
-    //   title: {
-    //     text: `${ticker} Hourly Price Variation`, // Dynamic title
-    //   },
-    //   xAxis: {
-    //     type: 'datetime',
-    //     dateTimeLabelFormats: {
-    //       // Display only the hour
-    //       hour: '%H:%M',
-    //     },
-    //     tickInterval: 3600 * 1000, // Hourly intervals
-    //   },
-    //   yAxis: {
-    //     title: {
-    //       text: 'Price',
-    //     },
-    //     opposite: true, // Move Y-axis to the right
-    //   },
-    // };
   }
 
   // Part of SearchComponent
@@ -438,7 +422,6 @@ export class SearchComponent implements OnInit {
                 this.stockProfile.ticker,
                 result.quantity,
                 result.total
-              
               )
               .subscribe({
                 next: (sellResult) => {
@@ -850,9 +833,8 @@ export class SearchComponent implements OnInit {
       },
     };
   }
-  
-  routeToPeer(ticker: string) {
 
+  routeToPeer(ticker: string) {
     console.log(this.hasCachedData);
     this.mainChart = null;
     this.hasCachedData = true;
@@ -867,6 +849,4 @@ export class SearchComponent implements OnInit {
     //   this.router.navigate(['/search', ticker], { queryParamsHandling: 'merge' });
     // }
   }
-  
-  
 }
