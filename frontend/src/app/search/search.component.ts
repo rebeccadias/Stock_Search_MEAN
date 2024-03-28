@@ -43,6 +43,8 @@ export class SearchComponent implements OnInit {
 
   selectedNewsItem: any;
   errorMessage: string | null = null;
+  stockSellMsg: string = '';
+  stockBuylMsg: string = '';
   private subscriptions: Subscription = new Subscription();
 
   private quoteSubscription: Subscription | null = null;
@@ -389,7 +391,11 @@ export class SearchComponent implements OnInit {
               .subscribe({
                 next: (buyResult) => {
                   console.log('Stock purchased successfully', buyResult);
-                  // Here you can refresh the balance or update the UI accordingly
+                  this.stockBuylMsg = `${this.stockProfile.ticker} bought successfully`;
+                  // Auto-close the alert after 5 seconds
+                  setTimeout(() => {
+                    this.stockBuylMsg = '';
+                  }, 3000);
                 },
                 error: (error) =>
                   console.error('Error purchasing stock', error),
@@ -433,7 +439,11 @@ export class SearchComponent implements OnInit {
               .subscribe({
                 next: (sellResult) => {
                   console.log('Stock sold successfully', sellResult);
-                  // Here you can refresh the balance or update the UI accordingly
+                  this.stockSellMsg = `${currentStocktoSell} sold successfully`;
+                  // Auto-close the alert after 5 seconds
+                  setTimeout(() => {
+                    this.stockSellMsg = '';
+                  }, 3000);
                 },
                 error: (error) => console.error('Error selling stock', error),
               });

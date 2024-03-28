@@ -7,17 +7,17 @@ import { SellDialogComponent } from '../sell-dialog/sell-dialog.component';
 @Component({
   selector: 'app-portfolio',
   templateUrl: './portfolio.component.html',
-  styleUrls: ['./portfolio.component.scss']
+  styleUrls: ['./portfolio.component.scss'],
 })
-
 export class PortfolioComponent implements OnInit {
   portfolio: any[] = [];
   userBalance: number = 0;
-  currentUser: string = 'RebeccaDias'; 
+  currentUser: string = 'RebeccaDias';
   profile_name: any[] = [];
+  stockSellMsg: string = '';
+  stockBuylMsg: string = '';
 
-  constructor(private appService: AppService,
-    public dialog: MatDialog,) {}
+  constructor(private appService: AppService, public dialog: MatDialog) {}
 
   ngOnInit() {
     this.loadUserBalance();
@@ -29,7 +29,7 @@ export class PortfolioComponent implements OnInit {
       next: (data) => {
         this.userBalance = data.balance;
       },
-      error: (error) => console.error("Error fetching user balance", error)
+      error: (error) => console.error('Error fetching user balance', error),
     });
   }
 
@@ -40,19 +40,20 @@ export class PortfolioComponent implements OnInit {
         console.log(this.portfolio);
         this.updatePortfolioWithCurrentPrices();
       },
-      error: (error) => console.error("Error fetching portfolio", error)
+      error: (error) => console.error('Error fetching portfolio', error),
     });
   }
 
   updatePortfolioWithCurrentPrices() {
     // Assuming each stock item in portfolio has a 'symbol' property
-    this.portfolio.forEach(stock => {
+    this.portfolio.forEach((stock) => {
       this.appService.fetchStockQuote(stock.symbol).subscribe({
         next: (quote) => {
           stock.currentPrice = quote.c; // Current price
           stock.change = quote.c - stock.price; // Change since purchase
         },
-        error: (error) => console.error(`Error fetching price for ${stock.symbol}`, error)
+        error: (error) =>
+          console.error(`Error fetching price for ${stock.symbol}`, error),
       });
     });
   }
@@ -65,35 +66,40 @@ export class PortfolioComponent implements OnInit {
       data: {
         ticker: stock.symbol,
         currentPrice: stock.currentPrice,
-        moneyInWallet: this.userBalance
-      }
+        moneyInWallet: this.userBalance,
+      },
     });
 
     // Handle the dialog close result
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // If result is not undefined, proceed with the buying operation
         const quantityToBuy = result.quantity;
-        this.appService.buyStock(
-          this.currentUser,
-          stock.symbol,
-          quantityToBuy,
-          stock.currentPrice,
-          stock.name // Assuming you have a 'name' field in your stock
-        ).subscribe({
-          next: (buyResult) => {
-            console.log('Stock purchased successfully', buyResult);
-            // Update the portfolio and user balance accordingly
-            this.loadUserBalance();
-            this.loadPortfolio();
-          },
-          error: (error) => console.error('Error purchasing stock', error)
-        });
+        this.appService
+          .buyStock(
+            this.currentUser,
+            stock.symbol,
+            quantityToBuy,
+            stock.currentPrice,
+            stock.name // Assuming you have a 'name' field in your stock
+          )
+          .subscribe({
+            next: (buyResult) => {
+              console.log('Stock purchased successfully', buyResult);
+              // Update the portfolio and user balance accordingly
+              this.loadUserBalance();
+              this.loadPortfolio();
+              this.stockBuylMsg = `${stock.symbol} bought successfully`;
+              // Auto-close the alert after 5 seconds
+              setTimeout(() => {
+                this.stockBuylMsg = '';
+              }, 3000);
+            },
+            error: (error) => console.error('Error purchasing stock', error),
+          });
       }
     });
   }
-
-
 
   openSellDialog(
     currentStocktoSell: string,
@@ -122,13 +128,17 @@ export class PortfolioComponent implements OnInit {
                 currentStocktoSell,
                 result.quantity,
                 result.total
-              
               )
               .subscribe({
                 next: (sellResult) => {
                   console.log('Stock sold successfully', sellResult);
                   this.loadUserBalance();
                   this.loadPortfolio();
+                  this.stockSellMsg = `${currentStocktoSell} sold successfully`;
+                  // Auto-close the alert after 5 seconds
+                  setTimeout(() => {
+                    this.stockSellMsg = '';
+                  }, 3000);
                 },
                 error: (error) => console.error('Error selling stock', error),
               });
@@ -138,7 +148,6 @@ export class PortfolioComponent implements OnInit {
       error: (error) => console.error('Error fetching user balance', error),
     });
   }
-
 
   getColorClass(change: number): string {
     if (change > 0) {
