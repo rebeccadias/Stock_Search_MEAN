@@ -43,9 +43,10 @@
         <div class="row mb-2 justify-content-center big-font">
           <span>{{ stockProfile.ticker }}</span>
           <i
-            class="far fa-star small-icon"
-            (click)="toggleFavorite(stockProfile, stockQuote)"
-          ></i>
+          class="fa-star small-icon 
+          {{ isFavorite ? 'fas' : 'far' }} "
+          (click)="toggleFavorite(stockProfile, stockQuote)"
+        ></i>
 
           <!-- <i class="far fa-star small-icon"></i> -->
           <!-- This is the empty star icon -->

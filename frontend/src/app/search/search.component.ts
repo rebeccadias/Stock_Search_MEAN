@@ -41,6 +41,7 @@ export class SearchComponent implements OnInit {
   chartOptions!: Highcharts.Options;
   SMA_VolchartOptions!: Highcharts.Options;
   recChartOptions!: Highcharts.Options;
+  isFavorite: boolean = false;
 
   selectedNewsItem: any;
   errorMessage: string | null = null;
@@ -445,6 +446,7 @@ export class SearchComponent implements OnInit {
     watchlistedStockProfile: any,
     watchlistedstockQuote: any
   ): void {
+    this.isFavorite = !this.isFavorite;
     const stockData = {
       wticker: watchlistedStockProfile.ticker,
       wname: watchlistedStockProfile.name,
@@ -456,7 +458,11 @@ export class SearchComponent implements OnInit {
     this.appService.postWatclistedStock(stockData).subscribe({
       next: (response) => {
         console.log('Stock added to favorites:', response);
-        // Optionally, refresh the watchlist or update UI accordingly
+        this.stockBuylMsg = `${watchlistedStockProfile.ticker} added to Watchlist.`;
+        // Auto-close the alert after 5 seconds
+        setTimeout(() => {
+          this.stockBuylMsg = '';
+        }, 3000);
       },
       error: (error) => {
         console.error('Error adding stock to favorites:', error);
