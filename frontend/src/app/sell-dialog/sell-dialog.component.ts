@@ -18,8 +18,10 @@ export class SellDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<SellDialogComponent>,
     private appService: AppService
   ) {
-    this.currentPriceofStockToSell = data.currentPriceofStockToSell;
-    this.moneyInWallet = data.moneyInWallet;
+    this.currentPriceofStockToSell = Number(
+      data.currentPriceofStockToSell.toFixed(2)
+    );
+    this.moneyInWallet = Number(data.moneyInWallet.toFixed(2));
   }
 
   ngOnInit(): void {
@@ -48,6 +50,7 @@ export class SellDialogComponent implements OnInit {
     return this.quantity > this.numberOfStocks;
   }
   get totalCost(): number {
-    return this.currentPriceofStockToSell * this.quantity;
+    const total = this.currentPriceofStockToSell * this.quantity;
+    return Number(total.toFixed(2)); // Round to 2 decimals
   }
 }

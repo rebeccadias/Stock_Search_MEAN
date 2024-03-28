@@ -2,11 +2,10 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatDialogRef } from '@angular/material/dialog';
 
-
 @Component({
   selector: 'app-buy-dialog',
   templateUrl: './buy-dialog.component.html',
-  styleUrls: ['./buy-dialog.component.scss']
+  styleUrls: ['./buy-dialog.component.scss'],
 })
 export class BuyDialogComponent {
   currentPrice: number;
@@ -17,16 +16,17 @@ export class BuyDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<BuyDialogComponent>
   ) {
-    this.currentPrice = data.currentPrice;
-    this.moneyInWallet = data.moneyInWallet;
+    this.currentPrice = Number(data.currentPrice.toFixed(2));
+    this.moneyInWallet = Number(data.moneyInWallet.toFixed(2));
   }
 
   get totalCost(): number {
-    return this.currentPrice * this.quantity;
+    const total = this.currentPrice * this.quantity;
+    return Number(total.toFixed(2)); // Round to 2 decimals
   }
 
   get canBuy(): boolean {
-    return this.quantity > 0 && this.totalCost <= this.moneyInWallet;
+    return this.totalCost > this.moneyInWallet;
   }
   closeDialog(): void {
     this.dialogRef.close();

@@ -1,27 +1,44 @@
-<h2 mat-dialog-title class="d-flex justify-content-between align-items-center pad">
+<h2
+  mat-dialog-title
+  class="d-flex justify-content-between align-items-center pad"
+>
   <span class="flex-grow-1">{{ data.ticker }}</span>
-  <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+  <button
+    type="button"
+    class="close"
+    aria-label="Close"
+    (click)="closeDialog()"
+  >
     <span aria-hidden="true">&times;</span>
   </button>
 </h2>
-  
-  <hr/>
-  
-  <mat-dialog-content class="mat-typography">
-    <div class="info-line">
-      <span>Current Price: ${{ currentPrice }}</span>
-    </div>
-    <div class="info-line">
-        <span>Money in Wallet: ${{ moneyInWallet }}</span>
-    </div>
-    <div class="quantity-input">
-        Quantity: <input type="number" [(ngModel)]="quantity" min="1">
-      </div>
-  </mat-dialog-content>
-  
-  <hr/>
-  
-  <mat-dialog-actions class="action-row">
-    <span>Total: ${{ totalCost }}</span>
-    <button class="btn-success" mat-raised-button [disabled]="!canBuy" [mat-dialog-close]="{quantity: quantity}">Buy</button>
-  </mat-dialog-actions>
+
+<hr />
+
+<mat-dialog-content class="mat-typography">
+  <div class="info-line">
+    <span>Current Price: ${{ currentPrice }}</span>
+  </div>
+  <div class="info-line">
+    <span>Money in Wallet: ${{ moneyInWallet }}</span>
+  </div>
+  <div class="quantity-input">
+    Quantity: <input type="number" [(ngModel)]="quantity" min="1" />
+    <div *ngIf="canBuy" class="error-message">Not enough money in wallet!</div>
+  </div>
+</mat-dialog-content>
+
+<hr />
+
+<mat-dialog-actions class="action-row d-flex justify-content-between">
+  <span>Total: ${{ totalCost }}</span>
+  <button
+    class="btn-success"
+    mat-raised-button
+    [disabled]="!canBuy"
+    [mat-dialog-close]="{ quantity: quantity }"
+   
+  >
+    Buy
+  </button>
+</mat-dialog-actions>
