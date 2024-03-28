@@ -299,32 +299,40 @@ app.post("/api/user/buy", async (req, res) => {
   }
 });
 
+// name: string,
+// symbol: string,
+// quantity: number,
+// total: number
+
 app.post("/api/user/sell", async (req, res) => {
-  const { name, symbol, quantity, price } = req.body;
+  const { name, symbol, quantity, total } = req.body;
 
   try {
     const user = await User.findOne({ name });
-    const totalSaleAmount = quantity * price;
 
-    // Check if user owns the stock and has enough quantity to sell
-    // This is a simplified check; you'll likely need more complex logic
-    // to handle partial sells or multiple purchases of the same stock
-    const stockIndex = user.stocks.findIndex(
-      (stock) =>
-        stock.symbol === symbol &&
-        stock.quantity >= quantity &&
-        stock.action === "BUY"
-    );
-    if (stockIndex === -1) {
-      return res.status(400).send("Stock not owned or insufficient quantity");
+    if (!user) {
+      return res.status(400).send("User not found");
     }
 
-    user.balance += totalSaleAmount;
-    // Adjust the quantity or remove the stock from the profile if all shares are sold
-    // This is a simplified approach
+    // Check if the user has the specified stock in their portfolio
+    const stockIndex = user.stocks.findIndex(
+      (stock) => stock.symbol === symbol && stock.quantity >= quantity
+    );
+
+    if (stockIndex === -1) {
+      return res
+        .status(400)
+        .send("Insufficient quantity of the specified stock to sell");
+    }
+
+    // Update user's balance
+    user.balance += total;
+    user.stocks[stockIndex].totalCost -= total;
+    // Adjust the quantity or remove the stock from the portfolio if all shares are sold
     user.stocks[stockIndex].quantity -= quantity;
-    if (user.stocks[stockIndex].quantity === 0)
+    if (user.stocks[stockIndex].quantity === 0) {
       user.stocks.splice(stockIndex, 1);
+    }
 
     await user.save();
 
@@ -463,6 +471,30 @@ app.get("/api/stock/companyrec", async (req, res) => {
     res.json(response.data);
   } catch (error) {
     res.status(500).send("Error fetching stock company peers");
+  }
+});
+
+// /users/stockscount
+
+app.get("/users/stockscount", async (req, res) => {
+  const { ticker, name } = req.query;
+
+  try {
+    const user = await User.findOne({ name });
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    let totalQuantity = 0;
+    for (const stock of user.stocks) {
+      if (stock.symbol === ticker) {
+        totalQuantity += stock.quantity;
+      }
+    }
+
+    res.json({ quantity: totalQuantity });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

@@ -1,34 +1,61 @@
 <div class="container mt-4">
-    <h2>My Portfolio</h2>
-    <p class="font-weight-bold">Money in Wallet: {{ userBalance | currency }}</p>
+  <h2>My Portfolio</h2>
+  <p class="font-weight-bold">Money in Wallet: {{ userBalance | currency }}</p>
+
+  <div *ngIf="portfolio.length > 0; else emptyPortfolioTemplate">
     <div *ngFor="let stock of portfolio" class="card my-3">
       <div class="card-header color-back text-black">
-        <h5 class="card-title mb-0">{{ stock.symbol }} - {{ stock.tickername }}</h5>
+        <h5 class="card-title mb-0">
+          {{ stock.symbol }} - {{ stock.tickername }}
+        </h5>
       </div>
       <div class="card-body bg-white">
         <div class="row">
           <div class="col-md-6">
-            <p>Quantity: <strong>{{ stock.quantity }}</strong></p>
-            <p>Avg. Cost / Share: <strong>{{ stock.price | currency }}</strong></p>
-            <p>Total Cost: <strong>{{ stock.quantity * stock.price | currency }}</strong></p>
+            <p>
+              Quantity: <strong>{{ stock.quantity }}</strong>
+            </p>
+            <p>
+              Avg. Cost / Share: <strong>{{ stock.price | currency }}</strong>
+            </p>
+            <p>
+              Total Cost:
+              <strong>{{ stock.quantity * stock.price | currency }}</strong>
+            </p>
           </div>
           <div class="col-md-6">
-            <p>Change: <span [ngClass]="getColorClass(stock.change)">{{ stock.change | currency }}</span></p>
-            <p>Current Price: <strong>{{ stock.currentPrice | currency }}</strong></p>
-            <p>Market Value: <strong>{{ stock.quantity * stock.currentPrice | currency }}</strong></p>
+            <p>
+              Change:
+              <span [ngClass]="getColorClass(stock.change)">{{
+                stock.change | currency
+              }}</span>
+            </p>
+            <p>
+              Current Price:
+              <strong>{{ stock.symbol | currency }}</strong>
+            </p>
+            <p>
+              Market Value:
+              <strong>{{
+                stock.quantity * stock.currentPrice | currency
+              }}</strong>
+            </p>
           </div>
         </div>
       </div>
       <div class="card-footer color-back">
-        <button class="btn btn-primary" (click)="openBuyDialog(stock)">Buy</button>
-        <button class="btn btn-danger" (click)="openSellDialog(stock)">Sell</button>
+        <button class="btn btn-primary" (click)="openBuyDialog(stock)">
+          Buy
+        </button>
+        <button class="btn btn-danger" (click)="openSellDialog(stock.symbol,stock.currentPrice)">
+          Sell
+        </button>
       </div>
     </div>
-  
-    <ng-template #emptyPortfolioTemplate>
-      <div class="alert alert-warning" role="alert">
-        Your portfolio is currently empty.
-      </div>
-    </ng-template>
   </div>
-  
+  <ng-template #emptyPortfolioTemplate>
+    <div class="alert alert-warning" role="alert" style="text-align: center">
+      Currently you don't have any stock.
+    </div>
+  </ng-template>
+</div>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AppService } from '../app.services';
 import { MatDialog } from '@angular/material/dialog';
 import { BuyDialogComponent } from '../buy-dialog/buy-dialog.component';
+import { SellDialogComponent } from '../sell-dialog/sell-dialog.component';
 
 @Component({
   selector: 'app-portfolio',
@@ -12,7 +13,7 @@ import { BuyDialogComponent } from '../buy-dialog/buy-dialog.component';
 export class PortfolioComponent implements OnInit {
   portfolio: any[] = [];
   userBalance: number = 0;
-  currentUser: string = 'RebeccaDias'; // Example, replace with actual dynamic user data
+  currentUser: string = 'RebeccaDias'; 
   profile_name: any[] = [];
 
   constructor(private appService: AppService,
@@ -92,9 +93,52 @@ export class PortfolioComponent implements OnInit {
     });
   }
 
-  openSellDialog(stock: any) {
-    // TODO: Implement sell dialog logic
+
+
+  openSellDialog(
+    currentStocktoSell: string,
+    currentPriceofStockToSell: number
+  ): void {
+    this.appService.getUserBalance(this.currentUser).subscribe({
+      next: (res) => {
+        const balance = res.balance;
+        const dialogRef = this.dialog.open(SellDialogComponent, {
+          width: '450px',
+          position: { top: '10px' },
+          data: {
+            ticker: currentStocktoSell,
+            currentPriceofStockToSell,
+            moneyInWallet: balance,
+          },
+        });
+
+        // Assuming you want to sell stocks when the dialog is closed and the user confirms the action
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result) {
+            // Call the sellStock method in your AppService to sell the stocks
+            this.appService
+              .sellStock(
+                this.currentUser,
+                currentStocktoSell,
+                result.quantity,
+                result.total
+              
+              )
+              .subscribe({
+                next: (sellResult) => {
+                  console.log('Stock sold successfully', sellResult);
+                  this.loadUserBalance();
+                  this.loadPortfolio();
+                },
+                error: (error) => console.error('Error selling stock', error),
+              });
+          }
+        });
+      },
+      error: (error) => console.error('Error fetching user balance', error),
+    });
   }
+
 
   getColorClass(change: number): string {
     if (change > 0) {

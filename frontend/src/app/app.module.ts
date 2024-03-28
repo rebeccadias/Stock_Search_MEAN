@@ -27,6 +27,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NewsModalComponent } from './news-modal/news-modal.component';
+import { SellDialogComponent } from './sell-dialog/sell-dialog.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { NewsModalComponent } from './news-modal/news-modal.component';
     SearchBarComponent,
     BuyDialogComponent,
     NewsModalComponent,
+    SellDialogComponent,
   ],
   imports: [
     BrowserModule,

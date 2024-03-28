@@ -94,6 +94,20 @@ export class AppService {
     });
   }
 
+  sellStock(
+    name: string,
+    symbol: string,
+    quantity: number,
+    total: number
+  ): Observable<any> {
+    return this.http.post(`${this.backendUrl}/api/user/sell`, {
+      name,
+      symbol,
+      quantity,
+      total,
+    });
+  }
+
   // In app.service
   postWatclistedStock(watchlistedStockData: any): Observable<any> {
     return this.http.post(
@@ -141,6 +155,14 @@ export class AppService {
   fetchCompanyRecData(symbol: string): Observable<any> {
     return this.http.get(`${this.backendUrl}/api/stock/companyrec`, {
       params: { symbol },
+    });
+  }
+
+  getNumberOfStocks(ticker: string, name: string): Observable<any> {
+    // Assuming your backend API endpoint is '/users/stocks/:ticker/count'
+
+    return this.http.get(`${this.backendUrl}/users/stockscount`, {
+      params: { ticker, name },
     });
   }
 }

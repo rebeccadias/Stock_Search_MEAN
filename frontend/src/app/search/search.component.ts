@@ -10,6 +10,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { Input } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { SellDialogComponent } from '../sell-dialog/sell-dialog.component';
 
 import vbp from 'highcharts/indicators/volume-by-price';
 import indicators from 'highcharts/indicators/indicators';
@@ -43,7 +44,7 @@ export class SearchComponent implements OnInit {
   selectedNewsItem: any;
   errorMessage: string | null = null;
   private subscriptions: Subscription = new Subscription();
-  
+
   private quoteSubscription: Subscription | null = null;
 
   constructor(
@@ -54,7 +55,6 @@ export class SearchComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-
     this.activatedRoute.params.subscribe((params) => {
       let ticker = params['ticker'];
       // Before loading new data, check if we have cached data
@@ -69,12 +69,12 @@ export class SearchComponent implements OnInit {
       }
 
       // Setup periodic refresh for the stock quote
-      this.quoteSubscription = interval(15000).pipe(
-        switchMap(() => this.appService.fetchStockQuote(ticker))
-      ).subscribe(quote => {
-        this.stockQuote = quote;
-        // You might need to update the chart or other components that use the stock quote
-      });
+      this.quoteSubscription = interval(15000)
+        .pipe(switchMap(() => this.appService.fetchStockQuote(ticker)))
+        .subscribe((quote) => {
+          this.stockQuote = quote;
+          // You might need to update the chart or other components that use the stock quote
+        });
 
       this.router.navigate(['/search', ticker]);
       console.log(cachedData);
@@ -85,7 +85,11 @@ export class SearchComponent implements OnInit {
         this.companyPeers = cachedData.peers;
         this.companyNews = cachedData.news;
         this.insidersentiment = cachedData.sentiment;
-        this.setupChart(cachedData.summaryChart, cachedData.ticker, this.stockQuote.d);
+        this.setupChart(
+          cachedData.summaryChart,
+          cachedData.ticker,
+          this.stockQuote.d
+        );
         // this.loadHistoricalData2years(ticker);
         this.setupSMA_VolChart(cachedData.mainChart.results, cachedData.ticker);
         // Note: Ensure these properties are correctly assigned based on your caching structure
@@ -110,7 +114,7 @@ export class SearchComponent implements OnInit {
   //   if (ticker === ':ticker') {
   //     ticker = cachedData ? cachedData.ticker : '';
   //   }
-  
+
   //   this.router.navigate(['/search', ticker]);
   //   console.log(cachedData);
   //   if (cachedData) {
@@ -136,7 +140,7 @@ export class SearchComponent implements OnInit {
   //   if (this.quoteSubscription) {
   //     this.quoteSubscription.unsubscribe();
   //   }
-  // }  
+  // }
 
   loadStockDetails(ticker: string) {
     forkJoin({
@@ -147,42 +151,44 @@ export class SearchComponent implements OnInit {
       sentiment: this.appService.fetchInsiderSentiment(ticker),
       summaryChart: this.loadHistoricalData(ticker),
       mainChart: this.loadHistoricalData2years(ticker),
-    }).subscribe(({ profile, quote, peers, news, sentiment, summaryChart, mainChart }) => {
-      if (Object.keys(profile).length === 0) {
-        this.errorMessage = 'No data found. Please enter a valid ticker.';
-      } else {
-        this.errorMessage = null;
-        // Update component state with new data
-        this.stockProfile = profile;
-        this.stockQuote = quote;
-        this.companyPeers = peers;
-        this.companyNews = news;
-        this.insidersentiment = sentiment;
-        this.summaryChart = summaryChart;
-        this.mainChart = mainChart;
+    }).subscribe(
+      ({ profile, quote, peers, news, sentiment, summaryChart, mainChart }) => {
+        if (Object.keys(profile).length === 0) {
+          this.errorMessage = 'No data found. Please enter a valid ticker.';
+        } else {
+          this.errorMessage = null;
+          // Update component state with new data
+          this.stockProfile = profile;
+          this.stockQuote = quote;
+          this.companyPeers = peers;
+          this.companyNews = news;
+          this.insidersentiment = sentiment;
+          this.summaryChart = summaryChart;
+          this.mainChart = mainChart;
 
-        // Cache the new data
-        this.appService.cacheLastSearchResult({
-          ticker: ticker,
-          profile: profile,
-          quote: quote,
-          peers: peers,
-          news: news,
-          sentiment: sentiment,
-          summaryChart: summaryChart,
-          mainChart: mainChart,
-        });
-        // Introduce a 3-second delay before calling setupChart
-        console.log(this.summaryChart,ticker,this.stockQuote.d);
-        setTimeout(() => {
-          this.setupChart(this.summaryChart, ticker, this.stockQuote.d);
-        }, 3000); // 1000 milliseconds = 1 seconds
-        console.log(this.mainChart,ticker);
-        setTimeout(() => {
-          this.setupSMA_VolChart(this.mainChart.results, ticker);
-        }, 5000); // 1000 milliseconds = 1 seconds
+          // Cache the new data
+          this.appService.cacheLastSearchResult({
+            ticker: ticker,
+            profile: profile,
+            quote: quote,
+            peers: peers,
+            news: news,
+            sentiment: sentiment,
+            summaryChart: summaryChart,
+            mainChart: mainChart,
+          });
+          // Introduce a 3-second delay before calling setupChart
+          console.log(this.summaryChart, ticker, this.stockQuote.d);
+          setTimeout(() => {
+            this.setupChart(this.summaryChart, ticker, this.stockQuote.d);
+          }, 3000); // 1000 milliseconds = 1 seconds
+          console.log(this.mainChart, ticker);
+          setTimeout(() => {
+            this.setupSMA_VolChart(this.mainChart.results, ticker);
+          }, 5000); // 1000 milliseconds = 1 seconds
+        }
       }
-    });
+    );
   }
 
   checkMarketStatus() {
@@ -387,6 +393,49 @@ export class SearchComponent implements OnInit {
                 },
                 error: (error) =>
                   console.error('Error purchasing stock', error),
+              });
+          }
+        });
+      },
+      error: (error) => console.error('Error fetching user balance', error),
+    });
+  }
+
+  openSellDialog(
+    currentStocktoSell: string,
+    currentPriceofStockToSell: number
+  ): void {
+    this.appService.getUserBalance(this.currentUser).subscribe({
+      next: (res) => {
+        const balance = res.balance;
+        const dialogRef = this.dialog.open(SellDialogComponent, {
+          width: '450px',
+          position: { top: '10px' },
+          data: {
+            ticker: currentStocktoSell,
+            currentPriceofStockToSell,
+            moneyInWallet: balance,
+          },
+        });
+
+        // Assuming you want to sell stocks when the dialog is closed and the user confirms the action
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result) {
+            // Call the sellStock method in your AppService to sell the stocks
+            this.appService
+              .sellStock(
+                this.currentUser,
+                this.stockProfile.ticker,
+                result.quantity,
+                result.total
+              
+              )
+              .subscribe({
+                next: (sellResult) => {
+                  console.log('Stock sold successfully', sellResult);
+                  // Here you can refresh the balance or update the UI accordingly
+                },
+                error: (error) => console.error('Error selling stock', error),
               });
           }
         });
