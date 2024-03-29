@@ -16,10 +16,10 @@
         matInput
         [formControl]="myControl"
         [matAutocomplete]="auto"
-        class="form-control rounded-pill"
+        class="form-control rounded-pill text-truncate"
         (keyup.enter)="performSearch()"
         placeholder="Enter stock ticker symbol"
-        style="border: 2px solid #1d279d"
+        style="border: 2px solid #1d279d; font-size: 10px"
       />
       <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
         <mat-option *ngIf="isSpinning" class="spinner-option">

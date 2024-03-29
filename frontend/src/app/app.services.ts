@@ -6,8 +6,8 @@ import { Observable, map } from 'rxjs';
   providedIn: 'root',
 })
 export class AppService {
-  private backendUrl = 'http://localhost:3000';
-  // private backendUrl = 'https://assignment3-backend.uw.r.appspot.com/';
+  // private backendUrl = 'http://localhost:3000';
+  private backendUrl = 'https://assignment3-backend.uw.r.appspot.com/';
   private lastSearchResult: any = null;
 
   constructor(private http: HttpClient) {}

@@ -30,10 +30,8 @@
 .wordings {
   padding: 20px;
 }
-
-@media (max-width: 991px) {
-  /* Adjusts based on your navbar-expand-lg breakpoint */
-  .btn-outline-success {
-    text-align: left !important;
-  }
+#navbarSupportedContent button {
+  text-align: left;
 }
+
+

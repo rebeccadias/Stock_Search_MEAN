@@ -1,12 +1,7 @@
 .text-right {
   font-size: 20px;
 }
-/* Custom CSS for larger screens */
-@media (min-width: 768px) {
-  .high-price-row {
-    padding-left: 17%; /* Adjust the spacing as needed */
-  }
-}
+
 
 .big-font {
   font-size: 1.5em; /* Adjust the size as needed */
@@ -33,7 +28,7 @@
 }
 .mat-tab-group {
   padding-top: 20px;
-  padding-bottom: 20px; 
+  padding-bottom: 20px;
 }
 
 .table-insigh {
@@ -68,40 +63,7 @@
   font-weight: bold;
 }
 
-/* Responsive adjustments for iPhone 12 Pro and similar devices */
-@media (max-width: 390px) {
-  .big-font {
-    font-size: 1.1rem; /* Smaller font size for small screens */
-  }
 
-  .small-icon {
-    font-size: 0.8rem; /* Smaller icon size for small screens */
-  }
 
-  .btn {
-    padding: 0.25rem 0.5rem; /* Smaller padding for buttons */
-    font-size: 0.8rem; /* Smaller font size for buttons */
-    margin-right: 0.5rem; /* Adjusted spacing for buttons */
-  }
-  .stock-details {
-    font-size: 1rem; /* Smaller font size for small screens */
-  }
-  .stock-details-2 {
-    font-size: 0.8rem; /* Smaller font size for small screens */
-  }
 
-  .arrow {
-    font-size: 0.8rem; /* Ensuring arrows also match the smaller font size */
-  }
-  .responsive-iphone12 {
-    font-size: 0.6rem;
-  }
-}
 
-.market-status {
-  margin-bottom: 20px;
-}
-
-.pad {
-  margin-top: 20px;
-}
