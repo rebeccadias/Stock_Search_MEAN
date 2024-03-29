@@ -151,9 +151,9 @@ export class PortfolioComponent implements OnInit {
 
   getColorClass(change: number): string {
     if (change > 0) {
-      return 'text-success';
+      return 'text-success up-arrow';
     } else if (change < 0) {
-      return 'text-danger';
+      return 'text-danger down-arrow';
     } else {
       return 'text-dark';
     }

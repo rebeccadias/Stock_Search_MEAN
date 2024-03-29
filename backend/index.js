@@ -258,7 +258,7 @@ app.post("/api/user/init", async (req, res) => {
 });
 
 app.post("/api/user/buy", async (req, res) => {
-  const { name, symbol, quantity, price } = req.body;
+  const { name, symbol, quantity, price, tickername } = req.body;
 
   try {
     const totalCost = quantity * price;
@@ -284,7 +284,7 @@ app.post("/api/user/buy", async (req, res) => {
         action: "BUY",
         price, // This represents the latest price, but total cost will represent the average
         totalCost, // New field to keep track of total cost for average calculation
-        tickername: symbol, // Assuming tickername is the same as symbol
+        tickername,
       });
     }
 

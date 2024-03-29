@@ -1,5 +1,4 @@
 <div class="container mt-4">
-  
   <div
     *ngIf="stockSellMsg"
     class="alert alert-danger"
@@ -12,62 +11,84 @@
     </button>
   </div>
   <div
-  *ngIf="stockBuylMsg"
-  class="alert alert-success"
-  style="text-align: center"
-  role="alert"
->
-  {{ stockBuylMsg }}
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
+    *ngIf="stockBuylMsg"
+    class="alert alert-success"
+    style="text-align: center"
+    role="alert"
+  >
+    {{ stockBuylMsg }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
   <h2>My Portfolio</h2>
-  <p class="font-weight-bold">Money in Wallet: {{ userBalance | currency }}</p>
+  <h2>Money in Wallet: {{ userBalance | currency }}</h2>
 
   <div *ngIf="portfolio.length > 0; else emptyPortfolioTemplate">
     <div *ngFor="let stock of portfolio" class="card my-3">
       <div class="card-header color-back text-black">
-        <h5 class="card-title mb-0">
-          {{ stock.symbol }} - {{ stock.tickername }}
-        </h5>
+        <div class="card-title mb-0">
+          <span class="font-size-lg font-sm-md font-md-lg font-sm-xl">
+            {{ stock.symbol }}
+          </span>
+
+          <span class="font-size-sm font-sm-md" style="color: gray">{{
+            stock.tickername
+          }}</span>
+        </div>
       </div>
       <div class="card-body bg-white">
         <div class="row">
           <div class="col-md-6">
-            <p>
-              Quantity: <strong>{{ stock.quantity }}</strong>
-            </p>
-            <p>
-              Avg. Cost / Share: <strong>{{ stock.price | currency }}</strong>
-            </p>
-            <p>
-              Total Cost:
-              <strong>{{ stock.quantity * stock.price | currency }}</strong>
-            </p>
+            <div class="row">
+              <div class="col-6">Quantity:</div>
+              <div class="col-6">{{ stock.quantity }}</div>
+            </div>
+            <div class="row">
+              <div class="col-6">Avg. Cost / Share:</div>
+              <div class="col-6">
+                {{ stock.price }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">Total Cost:</div>
+              <div class="col-6">
+                {{ stock.quantity * stock.price }}
+              </div>
+            </div>
           </div>
           <div class="col-md-6">
-            <p>
-              Change:
-              <span [ngClass]="getColorClass(stock.change)">{{
-                stock.change | currency
-              }}</span>
-            </p>
-            <p>
-              Current Price:
-              <strong>{{ stock.currentPrice| currency }}</strong>
-            </p>
-            <p>
-              Market Value:
-              <strong>{{
-                stock.quantity * stock.currentPrice | currency
-              }}</strong>
-            </p>
+            <div class="row">
+              <div class="col-6">Change:</div>
+              <div class="col-6">
+                <div>
+                  <span [ngClass]="getColorClass(stock.change)">
+                    <span *ngIf="stock.change < 0">&#9660;</span>
+                    <!-- Downward arrow -->
+                    <span *ngIf="stock.change > 0">&#9650;</span>
+                    <!-- Upward arrow -->
+                    {{ stock.change }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">Current Price:</div>
+              <div class="col-6" [ngClass]="getColorClass(stock.change)">
+                {{ stock.currentPrice }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">Market Value:</div>
+              <div class="col-6" [ngClass]="getColorClass(stock.change)">
+                {{ stock.quantity * stock.currentPrice }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div class="card-footer color-back">
-        <button class="btn btn-primary" (click)="openBuyDialog(stock)">
+        <button class="btn btn-primary mr-2" (click)="openBuyDialog(stock)">
           Buy
         </button>
         <button
