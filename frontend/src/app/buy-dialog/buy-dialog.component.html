@@ -33,11 +33,9 @@
 <mat-dialog-actions class="action-row d-flex justify-content-between">
   <span>Total: ${{ totalCost }}</span>
   <button
-    class="btn-success"
-    mat-raised-button
-    [disabled]="!canBuy"
+    class="btn btn-success "
     [mat-dialog-close]="{ quantity: quantity }"
-   
+    [disabled]="canBuy"
   >
     Buy
   </button>

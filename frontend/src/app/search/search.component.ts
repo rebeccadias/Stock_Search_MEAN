@@ -189,7 +189,7 @@ export class SearchComponent implements OnInit {
     // Combine date and time in YYYY-MM-DD HH:MM:SS format
     this.currentDate = `${formattedDate} ${hours}:${minutes}:${seconds}`;
   }
-
+  //chatgpt prompt : how to convert a unix timestamp to a human-readable date in typescript
   convertTimestamp(unixTimestamp: number): string {
     const date = new Date(unixTimestamp * 1000); // Convert Unix timestamp to milliseconds
 
