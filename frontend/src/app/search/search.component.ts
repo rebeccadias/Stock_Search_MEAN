@@ -195,10 +195,25 @@ export class SearchComponent implements OnInit {
     this.currentDate = `${formattedDate} ${hours}:${minutes}:${seconds}`;
   }
 
-  convertTimestamp(timestamp: number): string {
-    if (!timestamp) return '';
-    const date = new Date(timestamp * 1000); // Assuming timestamp is in seconds
-    return date.toISOString().replace('T', ' ').slice(0, 19);
+  convertTimestamp(unixTimestamp: number): string {
+    const date = new Date(unixTimestamp * 1000); // Convert Unix timestamp to milliseconds
+
+    // Extract date components
+    const year = date.getUTCFullYear();
+    const month = this.padZero(date.getUTCMonth() + 1); // Month is zero-based, so add 1
+    const day = this.padZero(date.getUTCDate());
+    const hours = this.padZero(date.getUTCHours() - 7); // Adjust for Pacific Time Zone (UTC -7)
+    const minutes = this.padZero(date.getUTCMinutes());
+    const seconds = this.padZero(date.getUTCSeconds());
+
+    // Construct the desired format
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    return formattedDate;
+  }
+
+  padZero(num: number): string {
+    return num < 10 ? '0' + num : num.toString();
   }
 
   // loadHistoricalData(ticker: string,d: number) {
