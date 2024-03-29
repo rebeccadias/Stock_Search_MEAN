@@ -42,6 +42,7 @@ export class SearchComponent implements OnInit {
   SMA_VolchartOptions!: Highcharts.Options;
   recChartOptions!: Highcharts.Options;
   isFavorite: boolean = false;
+  tickerExists: boolean = false;
 
   selectedNewsItem: any;
   errorMessage: string | null = null;
@@ -98,6 +99,7 @@ export class SearchComponent implements OnInit {
         );
         // this.loadHistoricalData2years(ticker);
         this.setupSMA_VolChart(cachedData.mainChart.results, cachedData.ticker);
+        this.showSellBtn(cachedData.ticker);
         // Note: Ensure these properties are correctly assigned based on your caching structure
       } else {
         // If no cached data matches, proceed to load new data
@@ -108,6 +110,7 @@ export class SearchComponent implements OnInit {
       this.loadHistoricalData2years(this.ticker);
       this.loadCompanyEarningsData(this.ticker);
       this.loadCompanyRecData(this.ticker);
+      this.showSellBtn(this.ticker);
     });
     this.checkMarketStatus();
     this.setCurrentDate();
@@ -391,6 +394,7 @@ export class SearchComponent implements OnInit {
                 next: (buyResult) => {
                   console.log('Stock purchased successfully', buyResult);
                   this.stockBuylMsg = `${this.stockProfile.ticker} bought successfully`;
+                  this.tickerExists = true;
                   // Auto-close the alert after 5 seconds
                   setTimeout(() => {
                     this.stockBuylMsg = '';
@@ -864,5 +868,21 @@ export class SearchComponent implements OnInit {
     //   // Navigate and rely on ngOnInit or params subscription to handle data loading
     //   this.router.navigate(['/search', ticker], { queryParamsHandling: 'merge' });
     // }
+  }
+  showSellBtn(ticker: string): void {
+    ticker = ticker.toUpperCase();
+    this.appService
+      .checkTickerExistsInPortfolio(ticker, 'RebeccaDias')
+      .subscribe((exists) => {
+        this.tickerExists = exists.exists;
+        console.log('this.tickerExists', this.tickerExists);
+        if (this.tickerExists) {
+          // Ticker exists in the portfolio, show sell button
+          console.log(`Ticker ${ticker} is in the portfolio.`);
+        } else {
+          // Ticker does not exist in the portfolio
+          console.log(`Ticker ${ticker} is not in the portfolio.`);
+        }
+      });
   }
 }

@@ -70,6 +70,7 @@
             Buy
           </button>
           <button
+            *ngIf="tickerExists"
             type="button"
             class="btn btn-danger"
             (click)="openSellDialog(stockProfile.ticker, stockQuote.c)"

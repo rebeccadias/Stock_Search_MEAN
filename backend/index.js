@@ -498,6 +498,26 @@ app.get("/users/stockscount", async (req, res) => {
   }
 });
 
+app.get("/exists/in/portfolio", async (req, res) => {
+  const { ticker, name } = req.query;
+
+  try {
+    const user = await User.findOne({ name });
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    // Check if the ticker exists in the user's portfolio
+    const stockExists = user.stocks.some((stock) => stock.symbol === ticker);
+
+    res.json({ exists: stockExists });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//This function searches for the specified ticker in the stocks array of the user's document. If any stock in the portfolio has a matching symbol, it returns exists: true; otherwise, it returns exists: false
+
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
 
 // Path: backend/models/Post.js
