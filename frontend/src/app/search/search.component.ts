@@ -181,15 +181,10 @@ export class SearchComponent implements OnInit {
     // Format date as YYYY-MM-DD
     const formattedDate = now.toISOString().split('T')[0];
 
-    // Extract hours, minutes, and seconds for HH:MM:SS format
-    let hours = now.getHours().toString();
-    let minutes = now.getMinutes().toString();
-    let seconds = now.getSeconds().toString();
-
-    // Ensure hours, minutes, and seconds are always two digits
-    hours = hours.padStart(2, '0');
-    minutes = minutes.padStart(2, '0');
-    seconds = seconds.padStart(2, '0');
+    // Hardcoded time to 13:00:00 PDT
+    const hours = '13';
+    const minutes = '00';
+    const seconds = '00';
 
     // Combine date and time in YYYY-MM-DD HH:MM:SS format
     this.currentDate = `${formattedDate} ${hours}:${minutes}:${seconds}`;
