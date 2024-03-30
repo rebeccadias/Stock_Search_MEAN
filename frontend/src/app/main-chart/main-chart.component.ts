@@ -1,4 +1,11 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ChangeDetectorRef,
+} from '@angular/core';
 import * as Highcharts from 'highcharts/highstock';
 import vbp from 'highcharts/indicators/volume-by-price';
 import indicators from 'highcharts/indicators/indicators';
@@ -10,7 +17,7 @@ vbp(Highcharts);
 @Component({
   selector: 'app-main-chart',
   templateUrl: './main-chart.component.html',
-  styleUrls: ['./main-chart.component.scss']
+  styleUrls: ['./main-chart.component.scss'],
 })
 export class MainChartComponent implements OnInit, OnChanges {
   @Input() chartData: any;
@@ -19,17 +26,16 @@ export class MainChartComponent implements OnInit, OnChanges {
   Highcharts: typeof Highcharts = Highcharts;
   SMA_VolchartOptions!: Highcharts.Options;
 
-  constructor( private changeDetectorRef: ChangeDetectorRef ) { }
+  constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    console.log("onInit",this.chartData,this.ticker);
     if (this.chartData && this.ticker) {
       this.setupSMA_VolChart(this.chartData, this.ticker);
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log("Change",this.chartData,changes['chartData'],this.ticker);
+    console.log('Change', this.chartData, changes['chartData'], this.ticker);
     if (changes['chartData'] && this.chartData) {
       this.setupSMA_VolChart(this.chartData, this.ticker);
     }
@@ -275,5 +281,4 @@ export class MainChartComponent implements OnInit, OnChanges {
       ],
     };
   }
-
 }

@@ -50,6 +50,8 @@ export class SearchComponent implements OnInit {
   stockBuylMsg: string = '';
   private subscriptions: Subscription = new Subscription();
   ticker: string = '';
+  loading: boolean = false;
+  quoteInterval: any;
 
   private quoteSubscription: Subscription | null = null;
 
@@ -69,22 +71,23 @@ export class SearchComponent implements OnInit {
         this.ticker = cachedData.ticker;
       }
 
-      if (this.quoteSubscription) {
-        this.quoteSubscription.unsubscribe();
-        this.quoteSubscription = null;
-      }
+      // if (this.quoteSubscription) {
+      //   this.quoteSubscription.unsubscribe();
+      //   this.quoteSubscription = null;
+      // }
 
-      // Setup periodic refresh for the stock quote
-      this.quoteSubscription = interval(15000)
-        .pipe(switchMap(() => this.appService.fetchStockQuote(this.ticker)))
-        .subscribe((quote) => {
-          this.stockQuote = quote;
-          // You might need to update the chart or other components that use the stock quote
-        });
+      // // Setup periodic refresh for the stock quote
+      // this.quoteSubscription = interval(15000)
+      //   .pipe(switchMap(() => this.appService.fetchStockQuote(this.ticker)))
+      //   .subscribe((quote) => {
+      //     this.stockQuote = quote;
+      //     // You might need to update the chart or other components that use the stock quote
+      //   });
 
       this.router.navigate(['/search', this.ticker]);
-      console.log(cachedData);
+      this.loading = true;
       if (cachedData) {
+        this.loading = true;
         // If the cached data matches the current ticker, use it instead of loading new data
         this.hasCachedData = true;
         this.stockProfile = cachedData.profile;
@@ -92,6 +95,7 @@ export class SearchComponent implements OnInit {
         this.companyPeers = cachedData.peers;
         this.companyNews = cachedData.news;
         this.insidersentiment = cachedData.sentiment;
+        this.loading = false;
         this.setupChart(
           cachedData.summaryChart,
           cachedData.ticker,
@@ -100,8 +104,8 @@ export class SearchComponent implements OnInit {
         // this.loadHistoricalData2years(ticker);
         this.setupSMA_VolChart(cachedData.mainChart.results, cachedData.ticker);
         this.showSellBtn(cachedData.ticker);
-        // Note: Ensure these properties are correctly assigned based on your caching structure
       } else {
+        this.loading = true;
         // If no cached data matches, proceed to load new data
         this.hasCachedData = false;
         this.loadStockDetails(this.ticker);
@@ -111,12 +115,24 @@ export class SearchComponent implements OnInit {
       this.loadCompanyEarningsData(this.ticker);
       this.loadCompanyRecData(this.ticker);
       this.showSellBtn(this.ticker);
+
+      if (this.quoteInterval) {
+        this.loading = false;
+        clearInterval(this.quoteInterval); // Clear any existing interval
+      }
+      // Setup periodic refresh for the stock quote
+      this.quoteInterval = setInterval(() => {
+        this.appService.fetchStockQuote(this.ticker).subscribe((quote) => {
+          this.stockQuote = quote;
+        });
+      }, 15000);
     });
     this.checkMarketStatus();
     this.setCurrentDate();
   }
 
   loadStockDetails(ticker: string) {
+    this.loading = true;
     forkJoin({
       profile: this.appService.fetchStockProfile(ticker),
       quote: this.appService.fetchStockQuote(ticker),
@@ -128,6 +144,7 @@ export class SearchComponent implements OnInit {
     }).subscribe(
       ({ profile, quote, peers, news, sentiment, summaryChart, mainChart }) => {
         if (Object.keys(profile).length === 0) {
+          this.loading = false;
           this.errorMessage = 'No data found. Please enter a valid ticker.';
         } else {
           this.errorMessage = null;
@@ -152,14 +169,15 @@ export class SearchComponent implements OnInit {
             mainChart: mainChart,
           });
           // Introduce a 3-second delay before calling setupChart
-          console.log(this.summaryChart, ticker, this.stockQuote.d);
+          this.loading = false;
           setTimeout(() => {
             this.setupChart(this.summaryChart, ticker, this.stockQuote.d);
           }, 1000); // 1000 milliseconds = 1 seconds
           // console.log(this.mainChart, ticker);
           setTimeout(() => {
             this.setupSMA_VolChart(this.mainChart.results, ticker);
-          }, 5000); // 1000 milliseconds = 1 seconds
+          }, 5000);
+          // 1000 milliseconds = 1 seconds
         }
       }
     );
