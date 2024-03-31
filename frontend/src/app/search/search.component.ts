@@ -121,11 +121,11 @@ export class SearchComponent implements OnInit {
         clearInterval(this.quoteInterval); // Clear any existing interval
       }
       // Setup periodic refresh for the stock quote
-      this.quoteInterval = setInterval(() => {
-        this.appService.fetchStockQuote(this.ticker).subscribe((quote) => {
-          this.stockQuote = quote;
-        });
-      }, 15000);
+      // this.quoteInterval = setInterval(() => {
+      //   this.appService.fetchStockQuote(this.ticker).subscribe((quote) => {
+      //     this.stockQuote = quote;
+      //   });
+      // }, 15000);
     });
     this.checkMarketStatus();
     this.setCurrentDate();

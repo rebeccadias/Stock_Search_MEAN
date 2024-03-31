@@ -20,14 +20,6 @@ mongoose
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("Could not connect to MongoDB Atlas", err));
 
-// mongoose
-//   .connect(
-//     "mongodb+srv://bhavenvi:12345@cluster0.dzwa3me.mongodb.net/?retryWrites=true&w=majority",
-//     {}
-//   )
-//   .then(() => console.log("Connected to MongoDB Atlas"))
-//   .catch((err) => console.error("Could not connect to MongoDB Atlas", err));
-
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   balance: { type: Number, required: true },
