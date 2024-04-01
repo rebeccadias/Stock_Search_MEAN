@@ -6,8 +6,8 @@ import { Observable, map } from 'rxjs';
   providedIn: 'root',
 })
 export class AppService {
-  private backendUrl = 'http://localhost:3000';
-  // private backendUrl = 'https://assignment3-backend.uw.r.appspot.com/';
+  // private backendUrl = 'http://localhost:3000';
+  private backendUrl = 'https://assignment3-backend.uw.r.appspot.com/';
   private lastSearchResult: any = null;
 
   constructor(private http: HttpClient) {}
@@ -159,8 +159,6 @@ export class AppService {
   }
 
   getNumberOfStocks(ticker: string, name: string): Observable<any> {
-    // Assuming your backend API endpoint is '/users/stocks/:ticker/count'
-
     return this.http.get(`${this.backendUrl}/users/stockscount`, {
       params: { ticker, name },
     });

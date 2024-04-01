@@ -45,12 +45,11 @@ export class PortfolioComponent implements OnInit {
   }
 
   updatePortfolioWithCurrentPrices() {
-    // Assuming each stock item in portfolio has a 'symbol' property
     this.portfolio.forEach((stock) => {
       this.appService.fetchStockQuote(stock.symbol).subscribe({
         next: (quote) => {
-          stock.currentPrice = quote.c; // Current price
-          stock.change = quote.c - stock.price; // Change since purchase
+          stock.currentPrice = quote.c;
+          stock.change = quote.c - stock.price;
         },
         error: (error) =>
           console.error(`Error fetching price for ${stock.symbol}`, error),
@@ -59,7 +58,6 @@ export class PortfolioComponent implements OnInit {
   }
 
   openBuyDialog(stock: any): void {
-    // Open the BuyDialogComponent with the current stock information
     const dialogRef = this.dialog.open(BuyDialogComponent, {
       width: '450px',
       position: { top: '10px' },
@@ -70,10 +68,8 @@ export class PortfolioComponent implements OnInit {
       },
     });
 
-    // Handle the dialog close result
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // If result is not undefined, proceed with the buying operation
         const quantityToBuy = result.quantity;
         this.appService
           .buyStock(
@@ -81,16 +77,16 @@ export class PortfolioComponent implements OnInit {
             stock.symbol,
             quantityToBuy,
             stock.currentPrice,
-            stock.name // Assuming you have a 'name' field in your stock
+            stock.name
           )
           .subscribe({
             next: (buyResult) => {
               console.log('Stock purchased successfully', buyResult);
-              // Update the portfolio and user balance accordingly
+
               this.loadUserBalance();
               this.loadPortfolio();
               this.stockBuylMsg = `${stock.symbol} bought successfully`;
-              // Auto-close the alert after 5 seconds
+
               setTimeout(() => {
                 this.stockBuylMsg = '';
               }, 3000);
@@ -118,10 +114,8 @@ export class PortfolioComponent implements OnInit {
           },
         });
 
-        // Assuming you want to sell stocks when the dialog is closed and the user confirms the action
         dialogRef.afterClosed().subscribe((result) => {
           if (result) {
-            // Call the sellStock method in your AppService to sell the stocks
             this.appService
               .sellStock(
                 this.currentUser,
@@ -135,7 +129,7 @@ export class PortfolioComponent implements OnInit {
                   this.loadUserBalance();
                   this.loadPortfolio();
                   this.stockSellMsg = `${currentStocktoSell} sold successfully`;
-                  // Auto-close the alert after 5 seconds
+
                   setTimeout(() => {
                     this.stockSellMsg = '';
                   }, 3000);

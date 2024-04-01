@@ -1,4 +1,3 @@
-<!-- (click)="redirectToPage('/your-target-route')" -->
 <div class="container">
   <div *ngIf="watchlistEntries.length > 0; else noEntries">
     <div class="row">
@@ -21,7 +20,7 @@
       </div>
 
       <div class="w-100"></div>
-      <!-- This creates a new line break in the row -->
+
       <div class="col">
         <div class="big-text">{{ entry.ticker }}</div>
         <div>{{ entry.name }}</div>

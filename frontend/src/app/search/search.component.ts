@@ -71,19 +71,6 @@ export class SearchComponent implements OnInit {
         this.ticker = cachedData.ticker;
       }
 
-      // if (this.quoteSubscription) {
-      //   this.quoteSubscription.unsubscribe();
-      //   this.quoteSubscription = null;
-      // }
-
-      // // Setup periodic refresh for the stock quote
-      // this.quoteSubscription = interval(15000)
-      //   .pipe(switchMap(() => this.appService.fetchStockQuote(this.ticker)))
-      //   .subscribe((quote) => {
-      //     this.stockQuote = quote;
-      //     // You might need to update the chart or other components that use the stock quote
-      //   });
-
       this.router.navigate(['/search', this.ticker]);
       this.loading = true;
       if (cachedData) {
@@ -231,28 +218,6 @@ export class SearchComponent implements OnInit {
   padZero(num: number): string {
     return num < 10 ? '0' + num : num.toString();
   }
-
-  // loadHistoricalData(ticker: string,d: number) {
-  //   // this.stockProfile.ticker = ticker;
-  //   const toDate = new Date(); // This can be any day you choose
-  //   toDate.setHours(23, 59, 59, 999); // Set to the end of the day
-
-  //   const fromDate = new Date(toDate);
-  //   fromDate.setHours(0, 0, 0, 0); // Set to the start of the same day
-
-  //   const to = toDate.toISOString().split('T')[0];
-  //   const from = fromDate.toISOString().split('T')[0];
-
-  //   this.appService.fetchHistoricalData(ticker, from, to).subscribe(
-  //     (data) => {
-  //       // console.error(' fetching historical data:', data);
-  //       this.setupChart(data, ticker,d);
-  //     },
-  //     (error) => {
-  //       console.error('Error fetching historical data:', error);
-  //     }
-  //   );
-  // }
 
   loadHistoricalData(ticker: string) {
     ticker = ticker.toUpperCase();
@@ -665,8 +630,6 @@ export class SearchComponent implements OnInit {
   }
 
   setupEarningsChart(data: any) {
-    // function for drawing line on the graph after the chart has been rendered
-
     // code for getting X Axis Labels
     const XAxisLAbels = [];
 
@@ -680,9 +643,6 @@ export class SearchComponent implements OnInit {
     const XAxisLabels = data.map(
       (point: any) => `${point.period}!Surprise: ${point.surprise}`
     );
-    // console.log(XAxisLabels);
-
-    //getting min value for estimate and actual
 
     const estimate = [];
     const actual = [];
@@ -731,11 +691,6 @@ export class SearchComponent implements OnInit {
         style: {
           fontSize: 'small',
         },
-        // events: {
-        //   load: function () {
-        //     drawCustomLine(this);
-        //   },
-        // },
       },
       xAxis: {
         categories: XAxisLabels,
@@ -759,7 +714,6 @@ export class SearchComponent implements OnInit {
         shared: true,
 
         formatter: function (this: any) {
-          // console.log('this', this);
           const splitvalues = this.x.split('!');
           const date = splitvalues[0];
           const surprise = splitvalues[1];
@@ -804,7 +758,7 @@ export class SearchComponent implements OnInit {
 
     this.recChartOptions = {
       chart: {
-        type: 'column', // Specifies the chart type
+        type: 'column',
         backgroundColor: '#f8f8f8',
         style: {
           fontSize: 'small',
@@ -878,14 +832,6 @@ export class SearchComponent implements OnInit {
     this.hasCachedData = true;
     this.router.navigate(['/search', ticker]);
     this.loadStockDetails(ticker);
-
-    // if (this.router.url.includes(`/search/${ticker}`)) {
-    //   // If already viewing the ticker, you might want to manually trigger data reload
-    //   this.loadStockDetails(ticker);
-    // } else {
-    //   // Navigate and rely on ngOnInit or params subscription to handle data loading
-    //   this.router.navigate(['/search', ticker], { queryParamsHandling: 'merge' });
-    // }
   }
   showSellBtn(ticker: string): void {
     ticker = ticker.toUpperCase();

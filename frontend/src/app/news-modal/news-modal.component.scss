@@ -6,12 +6,10 @@
 
 .titlensubtit {
   h2 {
-    margin: 0 0 0 0; /* Removes default margin from h2, adjust the bottom margin as needed */
-    /* Add any additional styling for your h2 here */
+    margin: 0 0 0 0;
   }
   h5 {
-    margin: 0 0 0 0; /* Removes default margin from h2, adjust the bottom margin as needed */
-    /* Add any additional styling for your h2 here */
+    margin: 0 0 0 0;
   }
 }
 .dialog-subtitle {
@@ -19,7 +17,7 @@
   color: gray;
 }
 .dialog-actions {
-  flex: none; /* Prevents the actions from growing */
+  flex: none;
 }
 .dialog-actions mat-button {
   background-color: white !important;
@@ -28,22 +26,22 @@
 mat-dialog-close {
   background-color: white !important;
   color: white !important;
-} // Add a closing curly brace here
+}
 
 .close-icon {
-  color: blue; /* Sets the icon's color */
+  color: blue;
 }
 hr {
   border: 0;
-  height: 1px; /* Adjust the height to change the thickness of the line */
-  background-color: #cccccc; /* Set the color of the line */
-  margin: 0 0 20px 0; /* Adjust margins as needed */
+  height: 1px;
+  background-color: #cccccc;
+  margin: 0 0 20px 0;
 }
 
 .share {
-  padding: 20px 10px 10px 10px; /* Top, Right, Bottom, Left */
-  border-style: solid; /* Added to apply the border color */
+  padding: 20px 10px 10px 10px;
+  border-style: solid;
   border-color: #cccccc;
-  border-width: 1px; /* Specifies the width of the border; adjust as needed */
+  border-width: 1px;
   border-radius: 5px;
 }

@@ -10,12 +10,11 @@ import { Router } from '@angular/router';
 export class WatchlistComponent implements OnInit {
   watchlistEntries: any[] = [];
 
-  constructor(private appService: AppService, private router: Router) {} // Adjusted to AppService
+  constructor(private appService: AppService, private router: Router) {}
 
   ngOnInit(): void {
     this.appService.getWatchlist().subscribe({
       next: (data: any) => {
-        // Consider defining a more specific type instead of any
         this.watchlistEntries = data;
       },
       error: (error: any) => {
@@ -32,7 +31,6 @@ export class WatchlistComponent implements OnInit {
   deleteStock(ticker: string): void {
     this.appService.deleteStockFromWatchlist(ticker).subscribe({
       next: () => {
-        // Remove the stock from the local array to update UI
         this.watchlistEntries = this.watchlistEntries.filter(
           (entry) => entry.ticker !== ticker
         );

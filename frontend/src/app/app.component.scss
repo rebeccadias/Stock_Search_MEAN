@@ -1,29 +1,28 @@
-/* You can add global styles to this file, and also import other style files */
 // @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@200;400&display=swap");
 
 .navbar {
-  background-color: #1d279d !important; /* Change navbar background to blue */
+  background-color: #1d279d !important;
 }
 
 .navbar-light .navbar-brand,
 .navbar-light .navbar-nav .nav-link {
   font-weight: 400;
-  color: white !important; /* Change text color to white */
+  color: white !important;
 }
 .btn-outline-success {
-  background-color: transparent !important; /* Remove background color */
-  border: none !important; /* Remove border */
-  color: #f0ead6 !important; /* Ensure text color is white */
-  outline: none !important; /* Remove the default focus outline */
+  background-color: transparent !important;
+  border: none !important;
+  color: #f0ead6 !important;
+  outline: none !important;
   font-weight: 400;
 }
 .btn-outline-success:hover {
   font-weight: 700;
-  color: white !important; /* Ensure text color is white */
+  color: white !important;
 }
 
 .active-link {
-  box-shadow: 0 0 0 0.1rem white !important; /* Custom focus style */
+  box-shadow: 0 0 0 0.1rem white !important;
   border-radius: 15px;
 }
 
@@ -33,5 +32,3 @@
 #navbarSupportedContent button {
   text-align: left;
 }
-
-

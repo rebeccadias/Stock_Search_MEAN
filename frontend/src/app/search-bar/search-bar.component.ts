@@ -36,24 +36,20 @@ export class SearchBarComponent {
       switchMap((value) => this._filter(value || '')),
       tap(() => (this.isSpinning = false))
     );
-    // this.myControl.valueChanges.subscribe(value => {
-    //   console.log("Value changes:", value);
-    // });
+
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
-        // Reset myControl or its value here if needed
         Example: this.myControl.setValue('');
       });
 
     const cachedData = this.appService.getLastSearchResult();
   }
 
-  // Assume searchStocks returns Observable<any[]>, where each item has at least symbol and description properties
   private _filter(value: any): Observable<any[]> {
     let searchString = value;
     if (typeof value === 'object' && value !== null) {
-      searchString = value.symbol; // Use the symbol if the value is an object
+      searchString = value.symbol;
     }
 
     if (!searchString.trim()) {
@@ -69,7 +65,7 @@ export class SearchBarComponent {
   performSearch() {
     let tickerValue = this.myControl.value;
     this.appService.clearCache();
-    // Check if the value is an object and has a symbol property
+
     if (
       typeof tickerValue === 'object' &&
       tickerValue !== null &&
@@ -77,12 +73,10 @@ export class SearchBarComponent {
     ) {
       tickerValue = tickerValue.symbol;
     } else if (typeof tickerValue === 'string') {
-      // If it's a string, use the part before the '|' character
       tickerValue = tickerValue.split('|')[0].trim();
     } else if (!tickerValue) {
-      // If the input is empty, set the error message
       this.errorMessage = 'Please enter a valid ticker';
-      return; // Prevent further execution
+      return;
     }
 
     if (tickerValue) {
@@ -90,7 +84,6 @@ export class SearchBarComponent {
     }
   }
 
-  // In your component
   displayFn(stock: any): string {
     return stock && stock.symbol
       ? `${stock.symbol} | ${stock.description}`
@@ -103,10 +96,8 @@ export class SearchBarComponent {
   }
 
   optionSelected(option: any) {
-    // Set the selected option value to the input field
     this.myControl.setValue(option);
 
-    // Trigger the search
     this.performSearch();
   }
 }
